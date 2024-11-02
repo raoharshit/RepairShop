@@ -1,0 +1,70 @@
+package com.repairshoptest.repository;
+
+import java.util.List;
+
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import com.repairshoptest.model.Clerk;
+import com.repairshoptest.model.Customer;
+import com.repairshoptest.model.RepairService;
+
+@Repository
+public interface RepairServiceRepo extends JpaRepository<RepairService, Integer>{
+	
+	List<RepairService> findByCustomer(Customer customer);
+	
+//	@Query("SELECT r FROM RepairService r WHERE r.name LIKE %:pattern% OR c.email LIKE %:pattern% OR c.phone LIKE %:pattern%")
+//	List<RepairService> findByCustomerAndPattern(@Param("pattern") String pattern,Customer customer);
+	
+//	@Query("SELECT r FROM RepairService r WHERE r.name LIKE %:pattern% OR c.email LIKE %:pattern% OR c.phone LIKE %:pattern%")
+//	List<RepairService> findByPattern(@Param("pattern") String pattern);
+	
+	List<RepairService> findByCreatedBy(Clerk createdBy);
+	
+	@Query("SELECT rs FROM RepairService rs " +
+		       "JOIN rs.customer c " +
+		       "JOIN rs.defectiveItem di " +
+		       "WHERE c.id = :customerId " +
+		       "AND (rs.code LIKE %:search% " +
+		       "OR di.title LIKE %:search%)")
+		Page<RepairService> findServicesForCustomer(@Param("customerId") int custId, 
+		                                            @Param("search") String search, 
+		                                            Pageable pageable);
+	
+	
+	@Query("SELECT rs FROM RepairService rs " +
+		       "JOIN rs.customer c " +
+		       "JOIN rs.defectiveItem di " +
+		       "JOIN rs.assignedTo rp " +
+		       "WHERE rp.id = :repairpersonId " +
+		       "AND (rs.code LIKE %:search% " +
+		       "OR c.name LIKE %:search% " +
+		       "OR di.title LIKE %:search%)")
+		Page<RepairService> findServicesForRepairperson(@Param("repairpersonId") int repairId, 
+		                                                @Param("search") String search, 
+		                                                Pageable pageable);
+	
+	
+	@Query("SELECT rs FROM RepairService rs " +
+		       "JOIN rs.customer c " +
+		       "JOIN rs.defectiveItem di " +
+		       "JOIN rs.createdBy cl " +
+		       "WHERE (rs.code LIKE %:search% " +
+		       "OR c.name LIKE %:search% " +
+		       "OR di.title LIKE %:search%) " +
+		       "AND (:onlyMine = false OR cl.id = :clerkId)")
+		Page<RepairService> findServicesForClerk(@Param("search") String search, 
+		                                         @Param("onlyMine") Boolean onlyMine,
+		                                         @Param("clerkId") int clerkId,
+		                                         Pageable pageable);
+	
+	
+	
+	
+	
+}

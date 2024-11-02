@@ -1,0 +1,12 @@
+package com.repairshoptest.service;
+
+import com.repairshoptest.dto.DefectiveItemDTO;
+import com.repairshoptest.model.Clerk;
+import com.repairshoptest.model.Customer;
+import com.repairshoptest.model.DefectiveItem;
+
+public interface DefectiveItemService {
+	
+	DefectiveItem add(Clerk clerk, Customer customer, DefectiveItemDTO defectiveItemDTO);
+
+}
