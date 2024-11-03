@@ -14,15 +14,13 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
 import com.repairshoptest.model.RepairPerson;
 import com.repairshoptest.model.User;
 import com.repairshoptest.service.UserService;
 import com.repairshoptest.utils.JwtUtil;
-import com.repairshoptest.utils.UserContextHolder;
-
-import io.jsonwebtoken.Claims;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
@@ -48,7 +46,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (jwt != null && !jwtUtil.isTokenValid(jwt)) {
         	
             int userId = jwtUtil.extractUserId(jwt);
-            User user = userService.findById(userId);
+            User user;
+            try {
+            	user = userService.findById(userId);
+            }catch(ResourceNotFoundException ex) {
+            	response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Invalid user");
+            	return;
+            }
+            
             
          // Step 4: Authorization logic based on user type and endpoint
             String requestUri = request.getRequestURI();

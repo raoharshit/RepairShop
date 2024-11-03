@@ -1,5 +1,9 @@
 package com.repairshop.exception;
 
-public class RFANotFoundException {
+public class RFANotFoundException extends Exception{
 
+	public RFANotFoundException(String message) {
+		super(message);
+	}
+	
 }

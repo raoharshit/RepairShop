@@ -18,7 +18,7 @@ public interface RFARepo extends JpaRepository<AdditionalItemRFA, Integer>{
 			"JOIN r.repairService s " +
 			"JOIN s.customer c " +
 			"WHERE c.id = :customerId " +
-			"AND (:search IS NULL OR LOWER(s.defectiveItem.title) LIKE LOWER(CONCAT('%', :search, '%')))"+
+			"AND (:search = '' OR LOWER(s.defectiveItem.title) LIKE LOWER(CONCAT('%', :search, '%')))"+
 	"AND s.latestStatus != 'Closed'")
 Page<AdditionalItemRFA> findByCustomerAndDefectiveItemTitle(@Param("customerId") int custId, 
 		@Param("search") String search, 
@@ -28,7 +28,7 @@ Page<AdditionalItemRFA> findByCustomerAndDefectiveItemTitle(@Param("customerId")
 		"JOIN r.repairService s " +
 		"JOIN s.assignedTo rp " +
 		"WHERE rp.id = :repairPersonId " +
-		"AND (:search IS NULL OR LOWER(s.defectiveItem.title) LIKE LOWER(CONCAT('%', :search, '%')))")
+		"AND (:search = '' OR LOWER(s.defectiveItem.title) LIKE LOWER(CONCAT('%', :search, '%')))")
 Page<AdditionalItemRFA> findByRepairPersonAndDefectiveItemTitle(@Param("repairPersonId") int repairId, 
 		@Param("search") String search, 
 		Pageable pageable);

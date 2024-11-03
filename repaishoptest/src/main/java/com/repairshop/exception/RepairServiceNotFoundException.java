@@ -1,5 +1,9 @@
 package com.repairshop.exception;
 
-public class RepairServiceNotFoundException {
+public class RepairServiceNotFoundException extends Exception{
+	
+	public RepairServiceNotFoundException(String message) {
+		super(message);
+	}
 
 }

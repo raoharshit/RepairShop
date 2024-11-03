@@ -3,6 +3,7 @@ package com.repairshoptest.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.repairshop.exception.DuplicateUserException;
 import com.repairshoptest.dto.ClerkRequestDTO;
 import com.repairshoptest.dto.RegisterRequest;
 import com.repairshoptest.dto.RegisterResponse;
@@ -22,7 +23,7 @@ public class RegisterServiceImpl implements RegisterService{
 	private RepairPersonService repairPersonService;
 	
 	@Override
-	public RegisterResponse registerUser(RegisterRequest registerRequest) {
+	public RegisterResponse registerUser(RegisterRequest registerRequest) throws DuplicateUserException {
 		User user;
 		if(registerRequest.getType().equals("Clerk")) {
 			ClerkRequestDTO clerkRequestDTO = registerRequest.getClerk();
@@ -32,9 +33,6 @@ public class RegisterServiceImpl implements RegisterService{
 			user = repairPersonService.add(repairPersonRequestDTO);
 		}
 		
-		if(user == null) {
-			//throw new Exception("Some error occurred");
-		}
 		RegisterResponse registerResponse = new RegisterResponse("User Registered Successfully");
 		return registerResponse;
 	}

@@ -15,13 +15,13 @@ import com.repairshoptest.service.RepairServiceService;
 @RequestMapping("/repairservice")
 public class RepairServiceController {
 	
-	@Autowired
-	RepairServiceService repairServiceService;
-	
-	@PostMapping("/addService")
-	public RepairService addService(@RequestHeader("clerkId") int clerkId,@RequestBody RepairServiceRequestDTO repairServiceRequestDTO){
-		RepairService repairService = repairServiceService.add(clerkId, repairServiceRequestDTO);
-		return repairService;
-	}
+//	@Autowired
+//	RepairServiceService repairServiceService;
+//	
+//	@PostMapping("/addService")
+//	public RepairService addService(@RequestHeader("clerkId") int clerkId,@RequestBody RepairServiceRequestDTO repairServiceRequestDTO){
+//		RepairService repairService = repairServiceService.add(clerkId, repairServiceRequestDTO);
+//		return repairService;
+//	}
 
 }

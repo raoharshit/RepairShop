@@ -1,6 +1,5 @@
 package com.repairshoptest.service.impl;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.repairshop.exception.InvalidCredentialsException;
+import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.RepairServiceRequestDTO;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
@@ -30,51 +31,50 @@ import com.repairshoptest.utils.ServiceCodeGenerator;
 public class RepairServiceServiceImpl implements RepairServiceService{
 	
 	@Autowired
-	RepairServiceRepo repairServiceRepo;
+	private RepairServiceRepo repairServiceRepo;
 	
 	@Autowired
-	ServiceStatusService serviceStatusService;
+	private ServiceStatusService serviceStatusService;
 	
 	@Autowired
-	DefectiveItemService defectiveItemService;
+	private DefectiveItemService defectiveItemService;
 	
 	@Autowired
-	ClerkService clerkService;
+	private ClerkService clerkService;
 	
 	@Autowired
-	CustomerService customerService;
+	private CustomerService customerService;
 	
 	@Autowired
-	RepairPersonService repairPersonService;
+	private RepairPersonService repairPersonService;
 	
-	@Override
-	public List<RepairService> findAll() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public List<RepairService> findAll() {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 
 	@Override
-	public RepairService findById(int id) {
+	public RepairService findById(int id) throws ResourceNotFoundException{
 		// TODO Auto-generated method stub
 		Optional<RepairService> optRS = repairServiceRepo.findById(id);
 		if(optRS.isEmpty()) {
-			//throw new Exception("Service not found");
-			return null;
+			throw new ResourceNotFoundException("Service not found");
 		}
 		return optRS.get();
 	}
 
-	@Override
-	public List<RepairService> findByCustomer(Customer customer) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<RepairService> findByClerk(Clerk clerk) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public List<RepairService> findByCustomer(Customer customer) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
+//
+//	@Override
+//	public List<RepairService> findByClerk(Clerk clerk) {
+//		// TODO Auto-generated method stub
+//		return null;
+//	}
 	
 	@Override
 	public Page<RepairService> getServicesForRole(String role, int userId, Boolean onlyMine, String search, int page,
@@ -96,23 +96,14 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 
 	@Override
 	@Transactional
-	public RepairService add(int clerkId, RepairServiceRequestDTO repairServiceRequestDTO) {
-		System.out.println(clerkId);
-		System.out.println(repairServiceRequestDTO.getCustId());
-		System.out.println(repairServiceRequestDTO.getRepairId());
+	public RepairService add(int clerkId, RepairServiceRequestDTO repairServiceRequestDTO) throws Exception {
+//		System.out.println(clerkId);
+//		System.out.println(repairServiceRequestDTO.getCustId());
+//		System.out.println(repairServiceRequestDTO.getRepairId());
 		Clerk clerk = clerkService.findById(clerkId);
 		Customer customer = customerService.findById(repairServiceRequestDTO.getCustId());
 		RepairPerson repairPerson = repairPersonService.findById(repairServiceRequestDTO.getRepairId());
-		if(clerk == null) {
-			//throws new Exception("Clerk with " + clerkId + " is not present");
-			return null;
-		}else if(customer == null) {
-			//throws new Exception("Customer not found");
-			return null;
-		}else if(repairPerson == null) {
-			//throws new Exception("RepairPerson not found");
-			return null;
-		}else {
+		
 			RepairService repairService = repairServiceRequestDTO.getRepairService();
 			repairService.setCode(ServiceCodeGenerator.generateServiceCode());
 			DefectiveItem defectiveItem = defectiveItemService.add(clerk, customer, repairServiceRequestDTO);
@@ -127,33 +118,29 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 				if(status != null) {
 					return save;
 				}
+				throw new Exception("Could not create service status due to some error");
 			}
-			
-			return null;
-		}
+			throw new Exception("Could not create service due to some error");
 		
 	}
 	@Override
-	public boolean closeService(int id) {
+	public boolean closeService(int id) throws Exception{
 		Optional<RepairService> optRepairService = repairServiceRepo.findById(id);
 		if(optRepairService.isEmpty()) {
-			//throw new Exception("Service not found");
-			return false;
+			throw new ResourceNotFoundException("Service not found");
 		}
 		RepairService repairService = optRepairService.get();
 		repairService.setLatestStatus("Closed");
 		RepairService save = repairServiceRepo.save(repairService);
 		if(save == null) {
-			//throw new Exception("Some error occurred");
-			return false;
+			throw new Exception("Could not close service due to Some error occurred");
 		}
 		
 		ServiceStatus status = serviceStatusService.createStatus(repairService);
 		if(status != null) {
 			return true;
 		}
-		
-		return false;
+		throw new Exception("Could not create service status due to some error");
 	}
 
 	

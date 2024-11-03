@@ -12,14 +12,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.repairshop.exception.InvalidCredentialsException;
+import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.AdditionalItemRFARequestDTO;
 import com.repairshoptest.dto.AdditionalItemRFAResponseDTO;
-import com.repairshoptest.dto.CustomerRequestDTO;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairPersonRequestDTO;
@@ -39,51 +39,55 @@ import com.repairshoptest.service.ServiceStatusService;
 public class RepairPersonController {
 	
 	@Autowired
-	RepairPersonService repairPersonService;
+	private RepairPersonService repairPersonService;
 	
 	@Autowired
-	RepairServiceService repairServiceService;
+	private RepairServiceService repairServiceService;
 	
 	@Autowired
-	RFAService rfaService;
+	private RFAService rfaService;
 	
 	@Autowired
-	ServiceStatusService serviceStatusService;
+	private ServiceStatusService serviceStatusService;
 	
 	@GetMapping("/profile")
 	public ResponseEntity<?> getProfile(){
 		System.out.println("in customer controller");
 		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		RepairPerson repairPerson = repairPersonService.findById(repairId);
-		if(repairPerson == null) {
-			//throw new Exception("User not found");
-			return null;
+		try {
+			RepairPerson repairPerson = repairPersonService.findById(repairId);
+			return ResponseEntity.ok(RepairPersonResponseDTO.fromEntity(repairPerson));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
 		
-		return ResponseEntity.ok(RepairPersonResponseDTO.fromEntity(repairPerson));
 		
 	}
 	
 	@PutMapping("/profile")
 	public ResponseEntity<?> updateProfile(@RequestBody RepairPersonRequestDTO repairPersonRequestDTO) {
 		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		RepairPerson repairPerson = repairPersonService.update(repairId, repairPersonRequestDTO);
-		if(repairPerson == null) {
-			//throw new Exception("Some error occurred");
-			return null;
+		try {
+			RepairPerson repairPerson = repairPersonService.update(repairId, repairPersonRequestDTO);
+			return ResponseEntity.ok(RepairPersonResponseDTO.fromEntity(repairPerson));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(RepairPersonResponseDTO.fromEntity(repairPerson));
+		
 	}
 	
 	@PutMapping("/password")
 	public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
 		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		PasswordChangeResponse passwordChangeResponse = repairPersonService.updatePassword(repairId, passwordChangeRequest);
-		if(passwordChangeResponse == null) {
-			//throw new Exception("Some error occurred");
-			return null;
+		try {
+			PasswordChangeResponse passwordChangeResponse = repairPersonService.updatePassword(repairId, passwordChangeRequest);
+			return ResponseEntity.ok(passwordChangeResponse);
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		}catch(InvalidCredentialsException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
 		}
-		return ResponseEntity.ok(passwordChangeResponse);
+		
 	}
 	
 	@GetMapping("/service")
@@ -104,27 +108,24 @@ public class RepairPersonController {
 	
 	@GetMapping("/request/{id}")
 	public ResponseEntity<?> getRequestById(@PathVariable("id") int id) {
-		AdditionalItemRFA rfa = rfaService.findById(id);
-		
-		if(rfa == null) {
-			//throw new Exception("RFA not found");
-			return null;
+		try {
+			AdditionalItemRFA rfa = rfaService.findById(id);
+			return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
 		
-		return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
 	}
 	
 	@GetMapping("/service/{id}")
 	public ResponseEntity<?> getServiceById(@PathVariable("id") int id) {
-		System.out.println(id);
-		RepairService repairService = repairServiceService.findById(id);
-		
-		if(repairService == null) {
-			//throw new Exception("Service not found");
-			return null;
+		try {
+			RepairService repairService = repairServiceService.findById(id);
+			return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
 		
-		return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
 	}
 	
 	@GetMapping("/service/{id}/request")
@@ -143,46 +144,54 @@ public class RepairPersonController {
 	
 	@PostMapping("/service/{id}/request")
 	public ResponseEntity<?> createRequest(@PathVariable("id") int id, @RequestBody AdditionalItemRFARequestDTO dto){
-		AdditionalItemRFA rfa = rfaService.createRFA(id, dto);
-		if(rfa == null) {
-			// throw new Exception("Some error occurred");
-			return null;
+		try {
+			AdditionalItemRFA rfa = rfaService.createRFA(id, dto);
+			return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+		
 	}
 	
 	@PutMapping("/service/{id}/close")
 	public ResponseEntity<?> closeRepairService(@PathVariable("id") int id) {
 		
-		boolean closeService = repairServiceService.closeService(id);
-		if(closeService) {
+		try {
+			boolean closeService = repairServiceService.closeService(id);
 			return ResponseEntity.ok("Service closed successfully");
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		return new ResponseEntity("Some error occurred", (HttpStatus.INTERNAL_SERVER_ERROR));
+		
+		
 	}
 	
-	@GetMapping("/byid")
-	public RepairPerson findRepairPersonById(@RequestHeader(value = "repairId") int repairId) {
-		RepairPerson repairPerson = repairPersonService.findById(repairId);
-		return repairPerson;
-	}
-	
-	@GetMapping("/byemail")
-	public RepairPerson findRepairPersonByEmail(@RequestParam(value = "email") String email) {
-		RepairPerson repairPerson = repairPersonService.findByEmail(email);
-		return repairPerson;
-	}
-	
-	@PostMapping("/addRepairPerson")
-	public RepairPerson addRepairPerson(@RequestBody RepairPersonRequestDTO repairPersonRequestDTO) {
-		RepairPerson repairPerson = repairPersonService.add(repairPersonRequestDTO);
-		return repairPerson;
-	}
-	
-	@PostMapping("/updateRepairPerson")
-	public RepairPerson updateRepairPerson(@RequestHeader("repairId") int repairId, @RequestBody RepairPersonRequestDTO repairPersonRequestDTO) {
-		RepairPerson repairPerson = repairPersonService.update(repairId,repairPersonRequestDTO);
-		return repairPerson;
-	}
+//	@GetMapping("/byid")
+//	public RepairPerson findRepairPersonById(@RequestHeader(value = "repairId") int repairId) {
+//		RepairPerson repairPerson = repairPersonService.findById(repairId);
+//		return repairPerson;
+//	}
+//	
+//	@GetMapping("/byemail")
+//	public RepairPerson findRepairPersonByEmail(@RequestParam(value = "email") String email) {
+//		RepairPerson repairPerson = repairPersonService.findByEmail(email);
+//		return repairPerson;
+//	}
+//	
+//	@PostMapping("/addRepairPerson")
+//	public RepairPerson addRepairPerson(@RequestBody RepairPersonRequestDTO repairPersonRequestDTO) {
+//		RepairPerson repairPerson = repairPersonService.add(repairPersonRequestDTO);
+//		return repairPerson;
+//	}
+//	
+//	@PostMapping("/updateRepairPerson")
+//	public RepairPerson updateRepairPerson(@RequestHeader("repairId") int repairId, @RequestBody RepairPersonRequestDTO repairPersonRequestDTO) {
+//		RepairPerson repairPerson = repairPersonService.update(repairId,repairPersonRequestDTO);
+//		return repairPerson;
+//	}
 
 }

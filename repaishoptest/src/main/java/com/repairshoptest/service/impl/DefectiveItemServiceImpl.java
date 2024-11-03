@@ -4,36 +4,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.RepairServiceRequestDTO;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
 import com.repairshoptest.model.DefectiveItem;
 import com.repairshoptest.repository.DefectiveItemRepo;
-import com.repairshoptest.service.ClerkService;
-import com.repairshoptest.service.CustomerService;
 import com.repairshoptest.service.DefectiveItemService;
 
 @Service
 public class DefectiveItemServiceImpl implements DefectiveItemService{
 	
 	@Autowired
-	private CustomerService customerService;
-	
-	@Autowired
-	private ClerkService clerkService;
-	
-	@Autowired
 	private DefectiveItemRepo defectiveItemRepo;
 
 	@Override
 	@Transactional
-	public DefectiveItem add(Clerk clerk, Customer customer, RepairServiceRequestDTO dto) {
+	public DefectiveItem add(Clerk clerk, Customer customer, RepairServiceRequestDTO dto) throws ResourceNotFoundException{
 		if(clerk == null) {
-			//throws new Exception("Clerk not found");
-			return null;
+			throw new ResourceNotFoundException("Clerk not found");
 		}else if(customer == null) {
-			//throws new Exception("Customer not found");
-			return null;
+			throw new ResourceNotFoundException("Customer not found");
 		}else {
 			DefectiveItem defectiveItem = new DefectiveItem();
 			defectiveItem.setProductCode(dto.getProductCode());

@@ -1,6 +1,5 @@
 package com.repairshoptest.service.impl;
 
-import java.util.List;
 import java.util.Optional;
 
 import javax.transaction.Transactional;
@@ -12,6 +11,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.repairshop.exception.DuplicateUserException;
+import com.repairshop.exception.InvalidCredentialsException;
+import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairPersonRequestDTO;
@@ -29,45 +31,44 @@ public class RepairPersonServiceImpl implements RepairPersonService{
 	private PasswordEncoder passwordEncoder;
 	
 	@Override
-	public RepairPerson findById(int id) {
+	public RepairPerson findById(int id) throws ResourceNotFoundException{
 		Optional<RepairPerson> optRepairPerson = repairPersonRepo.findById(id);
 		if(optRepairPerson.isEmpty()) {
-			//throws new Exception("Repairperson with " + id + " is not present");
+			throw new ResourceNotFoundException("Repairperson not found");
 		}
 		return optRepairPerson.get();
 	}
 	
-	@Override
-	public RepairPerson findByEmail(String email) {
-		RepairPerson repairPerson = repairPersonRepo.findByEmail(email);
-		if(repairPerson == null) {
-			//throw new Exception("RepairPeron not found");
-		}
-		
-		return repairPerson;
-	}
+//	@Override
+//	public RepairPerson findByEmail(String email) {
+//		RepairPerson repairPerson = repairPersonRepo.findByEmail(email);
+//		if(repairPerson == null) {
+//			//throw new Exception("RepairPerson not found");
+//		}
+//		
+//		return repairPerson;
+//	}
 	
 	@Override
-	public RepairPerson authenticateRepairPerson(String userName, String password) {
+	public RepairPerson authenticateRepairPerson(String userName, String password) throws InvalidCredentialsException{
 		RepairPerson repairPerson = repairPersonRepo.findByEmail(userName);
 		if(repairPerson == null) {
-			// throw new Exception("Incorrect username or password");
+			 throw new InvalidCredentialsException("Incorrect username or password");
 		}
 		if(passwordEncoder.matches(password, repairPerson.getHashedPassword())) {
 			return repairPerson;
 		}
-//		throw new Exception("Incorrect username or password");
-		return null;
+		throw new InvalidCredentialsException("Incorrect username or password");
 	}
 
-	@Override
-	public List<RepairPerson> findBySpecialty(String specialty) {
-		List<RepairPerson> list = repairPersonRepo.findBySpecialty(specialty);
-		if(list == null || list.isEmpty()) {
-			//throw new Exception("No repairperson found");
-		}
-		return list;
-	}
+//	@Override
+//	public List<RepairPerson> findBySpecialty(String specialty) {
+//		List<RepairPerson> list = repairPersonRepo.findBySpecialty(specialty);
+//		if(list == null || list.isEmpty()) {
+//			//throw new Exception("No repairperson found");
+//		}
+//		return list;
+//	}
 	
 	@Override
 	public Page<RepairPerson> findBySearch(String search, int page, int limit, String specialty) {
@@ -80,11 +81,10 @@ public class RepairPersonServiceImpl implements RepairPersonService{
 
 	@Override
 	@Transactional
-	public RepairPerson add(RepairPersonRequestDTO repairPersonRequestDTO) {
+	public RepairPerson add(RepairPersonRequestDTO repairPersonRequestDTO) throws DuplicateUserException{
 		// TODO Auto-generated method stub
 		if(repairPersonRepo.findByEmail(repairPersonRequestDTO.getEmail()) != null ) {
-			// throw new Exception(Customer with same email is already present)
-			return null;
+			 throw new DuplicateUserException("Customer with same email is already present");
 		}
 		
 		RepairPerson repairPerson = repairPersonRequestDTO.getRepairPerson();
@@ -96,13 +96,12 @@ public class RepairPersonServiceImpl implements RepairPersonService{
 
 	@Override
 	@Transactional
-	public RepairPerson update(int repairPersonId, RepairPersonRequestDTO repairPersonRequestDTO) {
+	public RepairPerson update(int repairPersonId, RepairPersonRequestDTO repairPersonRequestDTO) throws ResourceNotFoundException{
 		// TODO Auto-generated method stub
 		Optional<RepairPerson> optRepairPerson = repairPersonRepo.findById(repairPersonId);
 		
 		if(optRepairPerson.isEmpty()) {
-			//throw new Exception("RepairPerson not found");
-			return null;
+			throw new ResourceNotFoundException("RepairPerson not found");
 		}
 		RepairPerson repairPerson = optRepairPerson.get();
 		repairPerson.setName(repairPersonRequestDTO.getName());
@@ -115,12 +114,11 @@ public class RepairPersonServiceImpl implements RepairPersonService{
 
 	@Override
 	@Transactional
-	public PasswordChangeResponse updatePassword(int id, PasswordChangeRequest passwordChangeRequest) {
+	public PasswordChangeResponse updatePassword(int id, PasswordChangeRequest passwordChangeRequest) throws ResourceNotFoundException,InvalidCredentialsException{
 		Optional<RepairPerson> optRepairPerson = (repairPersonRepo.findById(id));
 		
 		if(optRepairPerson.isEmpty()) {
-			//throw new Exception("RepairPerson not found");
-			return null;
+			throw new ResourceNotFoundException("RepairPerson not found");
 		}
 		RepairPerson repairPerson = optRepairPerson.get();
 		if(passwordEncoder.matches(passwordChangeRequest.getOldPassword(),repairPerson.getHashedPassword())) {
@@ -130,31 +128,30 @@ public class RepairPersonServiceImpl implements RepairPersonService{
 			PasswordChangeResponse passwordChangeResponse = new PasswordChangeResponse("Password changed successfully");
 			return passwordChangeResponse;
 		}
-		// throw new Exception("Old password is incorrect:);
-		return null;
+		 throw new InvalidCredentialsException("Old password is incorrect");
 		
 		
 	}
 
-	@Override
-	public List<RepairPerson> findAll() {
-		// TODO Auto-generated method stub
-		List<RepairPerson> list = repairPersonRepo.findAll();
-		return list;
-	}
+//	@Override
+//	public List<RepairPerson> findAll() {
+//		// TODO Auto-generated method stub
+//		List<RepairPerson> list = repairPersonRepo.findAll();
+//		return list;
+//	}
 
-	@Override
-	@Transactional
-	public boolean remove(int repairPersonId) {
-		// TODO Auto-generated method stub
-		Optional<RepairPerson> optRepairPerson = repairPersonRepo.findById(repairPersonId);
-		if(optRepairPerson.isEmpty()) {
-			//throws new Exception("Repairperson with " + id + " is not present");
-//			return false;
-		}
-		repairPersonRepo.delete(optRepairPerson.get());
-		return true;
-	}
+//	@Override
+//	@Transactional
+//	public boolean remove(int repairPersonId) {
+//		// TODO Auto-generated method stub
+//		Optional<RepairPerson> optRepairPerson = repairPersonRepo.findById(repairPersonId);
+//		if(optRepairPerson.isEmpty()) {
+//			//throws new Exception("Repairperson with " + id + " is not present");
+////			return false;
+//		}
+//		repairPersonRepo.delete(optRepairPerson.get());
+//		return true;
+//	}
 
 	
 

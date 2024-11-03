@@ -7,6 +7,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.repairshop.exception.DuplicateUserException;
+import com.repairshop.exception.InvalidCredentialsException;
+import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.ClerkRequestDTO;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
@@ -24,11 +27,11 @@ public class ClerkServiceImpl implements ClerkService{
 	private PasswordEncoder passwordEncoder;
 	
 	@Override
-	public Clerk findById(int clerkId) {
+	public Clerk findById(int clerkId) throws ResourceNotFoundException{
 		Optional<Clerk> optClerk = clerkRepo.findById(clerkId);
 		if(optClerk.isEmpty()) {
-			//throws new Exception("Clerk with " + clerkId + " is not present");
-			return null;
+			throw new ResourceNotFoundException("Clerk not found");
+//			return null;
 		}
 		return optClerk.get();
 	}
@@ -44,27 +47,23 @@ public class ClerkServiceImpl implements ClerkService{
 //	}
 	
 	@Override
-	public Clerk authenticateClerk(String userName, String password) {
+	public Clerk authenticateClerk(String userName, String password) throws InvalidCredentialsException{
 		System.out.println(userName + " " + password);
 		Clerk clerk = clerkRepo.findByEmail(userName);
 		if(clerk == null) {
-			System.out.println("no clerk");
-			// throw new exception("User not found");
-			return null;
+			 throw new InvalidCredentialsException("Incorrect username or password");
 		}
 		if(passwordEncoder.matches(password, clerk.getHashedPassword())) {
 			return clerk;
 		}
-		//throw new Exception("Invalid User");
-		return null;
+		throw new InvalidCredentialsException("Incorrect username or password");
 	}
 
 	@Override
 	@Transactional
-	public Clerk add(ClerkRequestDTO clerkRequestDTO) {
+	public Clerk add(ClerkRequestDTO clerkRequestDTO) throws DuplicateUserException{
 		if(clerkRepo.findByEmail(clerkRequestDTO.getEmail()) != null ) {
-			// throw new Exception(Clerk with same email is already present);
-			return null;
+			 throw new DuplicateUserException("Clerk with same email is already present");
 		}
 		Clerk clerk = clerkRequestDTO.getClerk();
 		String hashedPassword = passwordEncoder.encode(clerkRequestDTO.getPassword());
@@ -75,11 +74,10 @@ public class ClerkServiceImpl implements ClerkService{
 
 	@Override
 	@Transactional
-	public Clerk update(int clerkId, ClerkRequestDTO clerkRequestDTO) {
+	public Clerk update(int clerkId, ClerkRequestDTO clerkRequestDTO) throws ResourceNotFoundException{
 		Optional<Clerk> optClerk = clerkRepo.findById(clerkId);
 		if(optClerk.isEmpty()) {
-			//throw new Exception("Clerk not found");
-			return null;
+			throw new ResourceNotFoundException("Clerk not found");
 		}
 		Clerk clerk = optClerk.get();
 		clerk.setName(clerkRequestDTO.getName());
@@ -93,14 +91,13 @@ public class ClerkServiceImpl implements ClerkService{
 
 	@Override
 	@Transactional
-	public PasswordChangeResponse updatePassword(int clerkId, PasswordChangeRequest passwordChangeRequest) {
+	public PasswordChangeResponse updatePassword(int clerkId, PasswordChangeRequest passwordChangeRequest) throws ResourceNotFoundException,InvalidCredentialsException{
 		//Hashing algorithm code
 
 		Optional<Clerk> optClerk = clerkRepo.findById(clerkId);
 
 		if(optClerk.isEmpty()) {
-			// throw new Exception("Clerk not found");
-			return null;
+			 throw new ResourceNotFoundException("Clerk not found");
 		}
 		Clerk clerk = optClerk.get();
 		if(passwordEncoder.matches(passwordChangeRequest.getOldPassword(),clerk.getHashedPassword())) {
@@ -110,8 +107,7 @@ public class ClerkServiceImpl implements ClerkService{
 			PasswordChangeResponse passwordChangeResponse = new PasswordChangeResponse("Password changed successfully");
 			return passwordChangeResponse;
 		}
-		// throw new Exception("Old password is incorrect:);
-		return null;
+		 throw new InvalidCredentialsException("Old password is incorrect");
 	}
 
 //	@Override

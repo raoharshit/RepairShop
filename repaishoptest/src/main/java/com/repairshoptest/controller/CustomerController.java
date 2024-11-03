@@ -4,18 +4,19 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.repairshop.exception.InvalidCredentialsException;
+import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.AdditionalItemRFAResponseDTO;
 import com.repairshoptest.dto.CustomerRequestDTO;
 import com.repairshoptest.dto.CustomerResponseDTO;
@@ -38,52 +39,57 @@ public class CustomerController {
 //	int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 	
 	@Autowired
-	CustomerService customerService;
+	private CustomerService customerService;
 	
 	@Autowired
-	RepairServiceService repairServiceService;
+	private RepairServiceService repairServiceService;
 	
 	@Autowired
-	RFAService rfaService;
+	private RFAService rfaService;
 	
 	@Autowired
-	ServiceStatusService serviceStatusService;
+	private ServiceStatusService serviceStatusService;
 	
 	
 	
 	@GetMapping("/profile")
 	public ResponseEntity<?> getProfile(){
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Customer customer = customerService.findById(custId);
-		if(customer == null) {
-			//throw new Exception("User not found");
-			return null;
+		try {
+			Customer customer = customerService.findById(custId);
+			
+			return ResponseEntity.ok(CustomerResponseDTO.fromEntity(customer));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
 		
-		return ResponseEntity.ok(CustomerResponseDTO.fromEntity(customer));
 		
 	}
 	
 	@PutMapping("/profile")
 	public ResponseEntity<?> updateProfile(@RequestBody CustomerRequestDTO customerRequestDTO) {
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Customer update = customerService.update(custId, customerRequestDTO);
-		if(update == null) {
-			//throw new Exception("Some error occurred");
-			return null;
+		try {
+			Customer update = customerService.update(custId, customerRequestDTO);
+			return ResponseEntity.ok(CustomerResponseDTO.fromEntity(update));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
-		return ResponseEntity.ok(CustomerResponseDTO.fromEntity(update));
+		
 	}
 	
 	@PutMapping("/password")
 	public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		PasswordChangeResponse passwordChangeResponse = customerService.updatePassword(custId, passwordChangeRequest);
-		if(passwordChangeResponse == null) {
-			//throw new Exception("Some error occurred");
-			return null;
+		try {
+			PasswordChangeResponse passwordChangeResponse = customerService.updatePassword(custId, passwordChangeRequest);
+			return ResponseEntity.ok(passwordChangeResponse);
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		}catch(InvalidCredentialsException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
 		}
-		return ResponseEntity.ok(passwordChangeResponse);
+		
 	}
 	
 	@GetMapping("/service")
@@ -104,26 +110,24 @@ public class CustomerController {
 	
 	@GetMapping("/request/{id}")
 	public ResponseEntity<?> getRequestById(@PathVariable("id") int id) {
-		AdditionalItemRFA rfa = rfaService.findById(id);
-		
-		if(rfa == null) {
-			//throw new Exception("RFA not found");
-			return null;
+		try {
+			AdditionalItemRFA rfa = rfaService.findById(id);
+			return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
 		
-		return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
 	}
 	
 	@GetMapping("/service/{id}")
 	public ResponseEntity<?> getServiceById(@PathVariable("id") int id) {
-		RepairService repairService = repairServiceService.findById(id);
-		
-		if(repairService == null) {
-			//throw new Exception("Service not found");
-			return null;
+		try {
+			RepairService repairService = repairServiceService.findById(id);
+			return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}
 		
-		return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
 	}
 	
 	@GetMapping("/service/{id}/request")
@@ -141,12 +145,15 @@ public class CustomerController {
 	
 	@PutMapping("/request/{id}")
 	public ResponseEntity<?> updateRequest(@PathVariable("id") int id, @RequestParam("response") String response){
-		boolean updateRFA = rfaService.updateRFA(id, response);
-		if(updateRFA) {
+		try {
+			boolean updateRFA = rfaService.updateRFA(id, response);
 			return ResponseEntity.ok("Request " + response);
+		}catch(ResourceNotFoundException ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+		}catch(Exception ex) {
+			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
 		}
-		//throw new Exception("Some error occurred");
-		return null;
+		
 	}
 	
 //	@GetMapping("/customer/profile/byemail")
