@@ -32,8 +32,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     
     @Autowired JwtUtil jwtUtil;
 
-    private final String SECRET_KEY = "yourSecretKey"; // Replace with your actual secret key
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -41,21 +39,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Step 1: Extract JWT token from the Authorization header
     	System.out.println("in jwt");
     	String requestPath = request.getRequestURI();
-        if (requestPath.equals("/login")) {
+        if (requestPath.equals("/login") || requestPath.equals("/register")) {
             filterChain.doFilter(request, response);
             return;
         }
     	String jwt = extractJwtFromRequest(request);
-    	Claims claims = jwtUtil.validateToken(jwt);
-        if (jwt != null && claims != null) {
+    	System.out.println(jwt);
+        if (jwt != null && !jwtUtil.isTokenValid(jwt)) {
         	
-        	System.out.println("hello");
-
-            String userIdString = claims.getSubject(); // Assuming userId is set as subject
-            int userId = Integer.parseInt(userIdString);
-            System.out.println(userId);
+            int userId = jwtUtil.extractUserId(jwt);
             User user = userService.findById(userId);
-            System.out.println(user instanceof Customer);
+            
          // Step 4: Authorization logic based on user type and endpoint
             String requestUri = request.getRequestURI();
             if (requestUri.startsWith("/clerk") && !(user instanceof Clerk)) {

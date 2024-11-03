@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.repairshoptest.dto.DefectiveItemDTO;
+import com.repairshoptest.dto.RepairServiceRequestDTO;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
 import com.repairshoptest.model.DefectiveItem;
@@ -17,17 +17,17 @@ import com.repairshoptest.service.DefectiveItemService;
 public class DefectiveItemServiceImpl implements DefectiveItemService{
 	
 	@Autowired
-	CustomerService customerService;
+	private CustomerService customerService;
 	
 	@Autowired
-	ClerkService clerkService;
+	private ClerkService clerkService;
 	
 	@Autowired
-	DefectiveItemRepo defectiveItemRepo;
+	private DefectiveItemRepo defectiveItemRepo;
 
 	@Override
 	@Transactional
-	public DefectiveItem add(Clerk clerk, Customer customer, DefectiveItemDTO defectiveItemDTO) {
+	public DefectiveItem add(Clerk clerk, Customer customer, RepairServiceRequestDTO dto) {
 		if(clerk == null) {
 			//throws new Exception("Clerk not found");
 			return null;
@@ -35,7 +35,11 @@ public class DefectiveItemServiceImpl implements DefectiveItemService{
 			//throws new Exception("Customer not found");
 			return null;
 		}else {
-			DefectiveItem defectiveItem = defectiveItemDTO.getDefectiveItem();
+			DefectiveItem defectiveItem = new DefectiveItem();
+			defectiveItem.setProductCode(dto.getProductCode());
+			defectiveItem.setTitle(dto.getProductTitle());
+			defectiveItem.setCategory(dto.getProductCategory());
+			defectiveItem.setProductCode(dto.getProductCode());
 			defectiveItem.setCreatedBy(clerk);
 			defectiveItem.setCustomer(customer);
 			defectiveItemRepo.save(defectiveItem);

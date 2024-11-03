@@ -19,6 +19,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.repairshoptest.dto.AdditionalItemRFAResponseDTO;
 import com.repairshoptest.dto.CustomerRequestDTO;
 import com.repairshoptest.dto.CustomerResponseDTO;
+import com.repairshoptest.dto.PasswordChangeRequest;
+import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairServiceResponseDTO;
 import com.repairshoptest.model.AdditionalItemRFA;
 import com.repairshoptest.model.Customer;
@@ -51,7 +53,6 @@ public class CustomerController {
 	
 	@GetMapping("/profile")
 	public ResponseEntity<?> getProfile(){
-		System.out.println("in customer controller");
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		Customer customer = customerService.findById(custId);
 		if(customer == null) {
@@ -75,24 +76,28 @@ public class CustomerController {
 	}
 	
 	@PutMapping("/password")
-	public ResponseEntity<?> updatePassword(@RequestBody CustomerRequestDTO customerRequestDTO) {
+	public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		//Change password code
-		return ResponseEntity.ok("Password changed successfully");
+		PasswordChangeResponse passwordChangeResponse = customerService.updatePassword(custId, passwordChangeRequest);
+		if(passwordChangeResponse == null) {
+			//throw new Exception("Some error occurred");
+			return null;
+		}
+		return ResponseEntity.ok(passwordChangeResponse);
 	}
 	
 	@GetMapping("/service")
-	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String serach, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
+	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<RepairService> servicePage = repairServiceService.getServicesForRole("Customer", custId, false, serach, page, limit);
+		Page<RepairService> servicePage = repairServiceService.getServicesForRole("Customer", custId, false, search, page, limit);
 		
 		return ResponseEntity.ok(servicePage.map(RepairServiceResponseDTO::fromEntity));
 	}
 	
 	@GetMapping("/request")
-	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String serach, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
+	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("Customer", custId, serach, page, limit);
+		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("Customer", custId, search, page, limit);
 		
 		return ResponseEntity.ok(rfaPage.map(AdditionalItemRFAResponseDTO::fromEntity));
 	}
@@ -144,28 +149,28 @@ public class CustomerController {
 		return null;
 	}
 	
-	@GetMapping("/customer/profile/byemail")
-	public Customer findCustomerByEmail(@RequestParam("email") String email) {
-		Customer customer = customerService.findByEmail(email);
-		return customer;
-	}
+//	@GetMapping("/customer/profile/byemail")
+//	public Customer findCustomerByEmail(@RequestParam("email") String email) {
+//		Customer customer = customerService.findByEmail(email);
+//		return customer;
+//	}
 	
-	@PutMapping("/clerk/customers")
-	public Page<Customer> findCustomers(@RequestParam(value="search", defaultValue="") String search,@RequestParam(value="onlyMine", defaultValue="false") boolean onlyMine, @RequestParam(value="page",defaultValue="0") int page, @RequestParam(value="limit",defaultValue="10") int limit,@RequestHeader("clerkId") int clerkId) {
-		Page<Customer> customers = customerService.getCustomers(search, onlyMine, clerkId, page, limit);
-		return customers;
-	}
-	
-	@GetMapping("/clerk/allcustomers")
-	public List<Customer> findAllCustomers() {
-		List<Customer> customers = customerService.findAll();
-		return customers;
-	}
-	
-	@PostMapping("/clerk/createcustomer")
-	public Customer createCustomer(@RequestBody CustomerRequestDTO customerRequestDTO, @RequestHeader("clerkId") int clerkId) {
-		Customer customer = customerService.add(clerkId, customerRequestDTO );
-		return customer;
-	}
+//	@PutMapping("/clerk/customers")
+//	public Page<Customer> findCustomers(@RequestParam(value="search", defaultValue="") String search,@RequestParam(value="onlyMine", defaultValue="false") boolean onlyMine, @RequestParam(value="page",defaultValue="0") int page, @RequestParam(value="limit",defaultValue="10") int limit,@RequestHeader("clerkId") int clerkId) {
+//		Page<Customer> customers = customerService.getCustomers(search, onlyMine, clerkId, page, limit);
+//		return customers;
+//	}
+//	
+//	@GetMapping("/clerk/allcustomers")
+//	public List<Customer> findAllCustomers() {
+//		List<Customer> customers = customerService.findAll();
+//		return customers;
+//	}
+//	
+//	@PostMapping("/clerk/createcustomer")
+//	public Customer createCustomer(@RequestBody CustomerRequestDTO customerRequestDTO, @RequestHeader("clerkId") int clerkId) {
+//		Customer customer = customerService.add(clerkId, customerRequestDTO );
+//		return customer;
+//	}
 
 }

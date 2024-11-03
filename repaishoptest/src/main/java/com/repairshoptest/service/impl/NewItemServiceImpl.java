@@ -17,6 +17,9 @@ public class NewItemServiceImpl implements NewItemService{
 	@Override
 	public List<NewItem> findByCategory(String category) {
 		List<NewItem> list = newItemRepo.findByCategory(category);
+		if(list == null) {
+			//throw new Exception("No newitem found");
+		}
 		return list;
 	}
 	
@@ -25,7 +28,6 @@ public class NewItemServiceImpl implements NewItemService{
 		Optional<NewItem> optItem = newItemRepo.findById(id);
 		if(optItem.isEmpty()) {
 			//throw new Exception("New item not found");
-			return null;
 		}
 		
 		return optItem.get();

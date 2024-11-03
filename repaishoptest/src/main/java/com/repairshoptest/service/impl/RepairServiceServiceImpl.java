@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.repairshoptest.dto.RepairServiceDTO;
+import com.repairshoptest.dto.RepairServiceRequestDTO;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
 import com.repairshoptest.model.DefectiveItem;
@@ -96,13 +96,13 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 
 	@Override
 	@Transactional
-	public RepairService add(int clerkId, RepairServiceDTO repairServiceDTO) {
+	public RepairService add(int clerkId, RepairServiceRequestDTO repairServiceRequestDTO) {
 		System.out.println(clerkId);
-		System.out.println(repairServiceDTO.getCustId());
-		System.out.println(repairServiceDTO.getRepairId());
+		System.out.println(repairServiceRequestDTO.getCustId());
+		System.out.println(repairServiceRequestDTO.getRepairId());
 		Clerk clerk = clerkService.findById(clerkId);
-		Customer customer = customerService.findById(repairServiceDTO.getCustId());
-		RepairPerson repairPerson = repairPersonService.findById(repairServiceDTO.getRepairId());
+		Customer customer = customerService.findById(repairServiceRequestDTO.getCustId());
+		RepairPerson repairPerson = repairPersonService.findById(repairServiceRequestDTO.getRepairId());
 		if(clerk == null) {
 			//throws new Exception("Clerk with " + clerkId + " is not present");
 			return null;
@@ -113,19 +113,22 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 			//throws new Exception("RepairPerson not found");
 			return null;
 		}else {
-			RepairService repairService = repairServiceDTO.getRepairService();
+			RepairService repairService = repairServiceRequestDTO.getRepairService();
 			repairService.setCode(ServiceCodeGenerator.generateServiceCode());
-			DefectiveItem defectiveItem = defectiveItemService.add(clerk, customer, repairServiceDTO.getDefectiveItemDTO());
+			DefectiveItem defectiveItem = defectiveItemService.add(clerk, customer, repairServiceRequestDTO);
 			repairService.setDefectiveItem(defectiveItem);
 			repairService.setCreatedBy(clerk);
 			repairService.setCustomer(customer);
 			repairService.setAssignedTo(repairPerson);
 			repairService.setLatestStatus("Assigned to repairperson");
 			RepairService save = repairServiceRepo.save(repairService);
-			ServiceStatus status = serviceStatusService.createStatus(repairService);
-			if(status != null) {
-				return save;
+			if(save != null) {
+				ServiceStatus status = serviceStatusService.createStatus(repairService);
+				if(status != null) {
+					return save;
+				}
 			}
+			
 			return null;
 		}
 		

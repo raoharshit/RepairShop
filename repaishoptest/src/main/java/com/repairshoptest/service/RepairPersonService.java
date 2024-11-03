@@ -2,6 +2,10 @@ package com.repairshoptest.service;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+
+import com.repairshoptest.dto.PasswordChangeRequest;
+import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairPersonRequestDTO;
 import com.repairshoptest.model.RepairPerson;
 
@@ -11,11 +15,13 @@ public interface RepairPersonService {
 	
 	RepairPerson findByEmail(String email);
 	
-	public RepairPerson authenticateUser(String userName, String password);
+	public RepairPerson authenticateRepairPerson(String userName, String password);
 	
 	List<RepairPerson> findBySpecialty(String specialty);
 	
 	List<RepairPerson> findAll();
+	
+	Page<RepairPerson> findBySearch(String search, int page, int limit, String specialty);
 	
 	RepairPerson add(RepairPersonRequestDTO repairPersonRequestDTO);
 	
@@ -23,6 +29,6 @@ public interface RepairPersonService {
 	
 	boolean remove(int repairPersonId);
 	
-	boolean updatePassword(int repairPersonId, String password);
+	PasswordChangeResponse updatePassword(int repairPersonId, PasswordChangeRequest passwordChangeRequest);
 
 }

@@ -1,32 +1,30 @@
 package com.repairshoptest.dto;
 
-import com.repairshoptest.model.RepairPerson;
-
-public class RepairPersonRequestDTO {
+public class RegisterRequest {
 	
 	private String name;
 	private String email;
 	private String phone;
 	private String address;
 	private String password;
+	private String type;
 	private String specialty;
 	
 	
-	
-
-
-	public RepairPersonRequestDTO() {
+	public RegisterRequest() {
 		super();
 	}
 
 
-	public RepairPersonRequestDTO(String name, String email, String phone, String address,String password, String specialty) {
+	public RegisterRequest(String name, String email, String phone, String address, String password, String type,
+			String specialty) {
 		super();
 		this.name = name;
 		this.email = email;
 		this.phone = phone;
 		this.address = address;
 		this.password = password;
+		this.type = type;
 		this.specialty = specialty;
 	}
 
@@ -69,10 +67,8 @@ public class RepairPersonRequestDTO {
 	public void setAddress(String address) {
 		this.address = address;
 	}
-	
-	
 
-	
+
 	public String getPassword() {
 		return password;
 	}
@@ -80,6 +76,16 @@ public class RepairPersonRequestDTO {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+
+	public String getType() {
+		return type;
+	}
+
+
+	public void setType(String type) {
+		this.type = type;
 	}
 
 
@@ -91,20 +97,26 @@ public class RepairPersonRequestDTO {
 	public void setSpecialty(String specialty) {
 		this.specialty = specialty;
 	}
-
-	@Override
-	public String toString() {
-		return "RepairPersonRequestDTO [name=" + name + ", email=" + email + ", phone=" + phone + ", address=" + address
-				+ ", password=" + password + ", speciality=" + specialty + "]";
+	
+	public ClerkRequestDTO getClerk() {
+		ClerkRequestDTO clerkRequestDTO = new ClerkRequestDTO();
+		clerkRequestDTO.setName(this.name);
+		clerkRequestDTO.setEmail(this.email);
+		clerkRequestDTO.setPhone(this.phone);
+		clerkRequestDTO.setAddress(this.address);
+		clerkRequestDTO.setPassword(this.password);
+		return clerkRequestDTO;
 	}
 	
-	public RepairPerson getRepairPerson() {
-		RepairPerson repairPerson = new RepairPerson();
-		repairPerson.setName(this.name);
-		repairPerson.setEmail(this.email);
-		repairPerson.setPhone(this.phone);
-		repairPerson.setAddress(this.address);
-		repairPerson.setSpecialty(specialty);
-	    return repairPerson;
+	public RepairPersonRequestDTO getRepairPerson() {
+		RepairPersonRequestDTO repairPersonDTO = new RepairPersonRequestDTO();
+		repairPersonDTO.setName(this.name);
+		repairPersonDTO.setEmail(this.email);
+		repairPersonDTO.setPhone(this.phone);
+		repairPersonDTO.setAddress(this.address);
+		repairPersonDTO.setPassword(this.password);
+		repairPersonDTO.setSpecialty(this.specialty);
+		return repairPersonDTO;
 	}
+
 }

@@ -3,7 +3,7 @@ package com.repairshoptest.dto;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
 
-public class ClerkDTO {
+public class ClerkRequestDTO {
 	private String name;
 	private String email;
 	private String phone;
@@ -11,12 +11,12 @@ public class ClerkDTO {
 	private String password;
 	
 	
-	public ClerkDTO() {
+	public ClerkRequestDTO() {
 		super();
 	}
 
 
-	public ClerkDTO(String name, String email, String phone, String address,String password) {
+	public ClerkRequestDTO(String name, String email, String phone, String address,String password) {
 		super();
 		this.name = name;
 		this.email = email;
@@ -88,7 +88,6 @@ public class ClerkDTO {
 	        clerk.setEmail(this.email);
 	        clerk.setPhone(this.phone);
 	        clerk.setAddress(address);
-	        clerk.setHashedPassword(password);
 	        return clerk;
 	}
 }

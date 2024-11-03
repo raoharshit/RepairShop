@@ -13,17 +13,17 @@ public class RepairPerson extends User {
 		super();
 	}
 
-	public RepairPerson(int id, String name, String email, String phone, String address, String hashedPassword,  String speciality) {
+	public RepairPerson(int id, String name, String email, String phone, String address, String hashedPassword,  String specialty) {
 		super(id, name, email, phone, address, hashedPassword);
-		this.specialty=speciality;
+		this.specialty=specialty;
 	}
 
-	public String getSpeciality() {
+	public String getSpecialty() {
 		return specialty;
 	}
 
-	public void setSpeciality(String speciality) {
-		this.specialty = speciality;
+	public void setSpecialty(String specialty) {
+		this.specialty = specialty;
 	}
 
 	@Override

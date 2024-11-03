@@ -10,13 +10,14 @@ public class RepairServiceResponseDTO {
 	private double baseCharge;
 	private DefectiveItem defItem;
 	private String status;
+	private String description;
 	private String custName;
 	private String repairName;
 	public RepairServiceResponseDTO() {
 		super();
 	}
 
-	public RepairServiceResponseDTO(int id, String code,double baseCharge,DefectiveItem defItem, String status, String custName,
+	public RepairServiceResponseDTO(int id, String code,double baseCharge,DefectiveItem defItem, String status,String description, String custName,
 			String repairName) {
 		super();
 		this.id = id;
@@ -24,6 +25,7 @@ public class RepairServiceResponseDTO {
 		this.baseCharge = baseCharge;
 		this.defItem = defItem;
 		this.status = status;
+		this.description = description;
 		this.custName = custName;
 		this.repairName = repairName;
 	}
@@ -69,6 +71,16 @@ public class RepairServiceResponseDTO {
 	public void setStatus(String status) {
 		this.status = status;
 	}
+	
+	
+
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
+	}
 
 	public String getCustName() {
 		return custName;
@@ -86,11 +98,21 @@ public class RepairServiceResponseDTO {
 		this.repairName = repairName;
 	}
 	
+	
+	
+	@Override
+	public String toString() {
+		return "RepairServiceResponseDTO [id=" + id + ", code=" + code + ", baseCharge=" + baseCharge + ", defItem="
+				+ defItem + ", status=" + status + ", description=" + description + ", custName=" + custName
+				+ ", repairName=" + repairName + "]";
+	}
+
 	public static RepairServiceResponseDTO fromEntity(RepairService repairService) {
 		RepairServiceResponseDTO repairServiceResponseDTO = new RepairServiceResponseDTO();
 		repairServiceResponseDTO.setId(repairService.getId());
 		repairServiceResponseDTO.setCode(repairService.getCode());
 		repairServiceResponseDTO.setBaseCharge(repairService.getBaseCharge());
+		repairServiceResponseDTO.setDescription(repairService.getDescription());
 		repairServiceResponseDTO.setDefItem(repairService.getDefectiveItem());
 		repairServiceResponseDTO.setStatus(repairService.getLatestStatus());
 		repairServiceResponseDTO.setCustName(repairService.getCustomer().getName());

@@ -11,7 +11,8 @@ import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.MalformedJwtException;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.SignatureException;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.security.SecurityException;
 import io.jsonwebtoken.UnsupportedJwtException;
 import io.jsonwebtoken.security.Keys;
 
@@ -34,20 +35,28 @@ public class JwtUtil {
                 .signWith(getSigningKey(),SignatureAlgorithm.HS256) // Sign with HS256 and the secret key
                 .compact();
     }
+    
+    private Claims extractClaims(String jwt) {
+    	return Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(jwt)
+                .getBody();
+    }
+    
+    private boolean isExpired(String jwt) {
+    	return extractClaims(jwt).getExpiration().before(new Date());
+    }
+    
+    public int extractUserId(String jwt) {
+    	return Integer.parseInt(extractClaims(jwt).getSubject());
+    }
 
-    public Claims validateToken(String jwt) {
+    public boolean isTokenValid(String jwt) {
         try {
             // Parse the token, validating signature and expiration
-            Claims claims = Jwts.parserBuilder()
-                    .setSigningKey(getSigningKey())
-                    .build()
-                    .parseClaimsJws(jwt)
-                    .getBody();
-            claims.getExpiration().before(new Date());
-            // Check if the token is expired
-            return claims;
+           System.out.println(isExpired(jwt));
+            return isExpired(jwt);
 
-        } catch (SignatureException ex) {
+        } catch (SecurityException e) {
             System.out.println("Invalid JWT signature.");
         } catch (MalformedJwtException ex) {
             System.out.println("Invalid JWT token.");
@@ -59,7 +68,7 @@ public class JwtUtil {
             System.out.println("JWT claims string is empty.");
         }
         
-        return null; // Return false if any validation checks fail
+        return false; // Return false if any validation checks fail
     }
     
     

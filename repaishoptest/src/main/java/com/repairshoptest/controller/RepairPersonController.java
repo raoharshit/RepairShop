@@ -20,6 +20,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.repairshoptest.dto.AdditionalItemRFARequestDTO;
 import com.repairshoptest.dto.AdditionalItemRFAResponseDTO;
 import com.repairshoptest.dto.CustomerRequestDTO;
+import com.repairshoptest.dto.PasswordChangeRequest;
+import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairPersonRequestDTO;
 import com.repairshoptest.dto.RepairPersonResponseDTO;
 import com.repairshoptest.dto.RepairServiceResponseDTO;
@@ -74,24 +76,28 @@ public class RepairPersonController {
 	}
 	
 	@PutMapping("/password")
-	public ResponseEntity<?> updatePassword(@RequestBody CustomerRequestDTO customerRequestDTO) {
-		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		//Change password code
-		return ResponseEntity.ok("Password changed successfully");
+	public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
+		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		PasswordChangeResponse passwordChangeResponse = repairPersonService.updatePassword(repairId, passwordChangeRequest);
+		if(passwordChangeResponse == null) {
+			//throw new Exception("Some error occurred");
+			return null;
+		}
+		return ResponseEntity.ok(passwordChangeResponse);
 	}
 	
 	@GetMapping("/service")
-	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String serach, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
+	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<RepairService> servicePage = repairServiceService.getServicesForRole("RepairPerson", repairId, false, serach, page, limit);
+		Page<RepairService> servicePage = repairServiceService.getServicesForRole("RepairPerson", repairId, false, search, page, limit);
 		
 		return ResponseEntity.ok(servicePage.map(RepairServiceResponseDTO::fromEntity));
 	}
 	
 	@GetMapping("/request")
-	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String serach, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
+	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("RepairPerson", repairId, serach, page, limit);
+		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("RepairPerson", repairId, search, page, limit);
 		
 		return ResponseEntity.ok(rfaPage.map(AdditionalItemRFAResponseDTO::fromEntity));
 	}

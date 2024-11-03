@@ -21,6 +21,7 @@ public class RepairService {
 	private String code;
 	private double baseCharge;
 	private String latestStatus;
+	private String description;
 
 	@OneToOne
 	private DefectiveItem defectiveItem;
@@ -43,11 +44,12 @@ public class RepairService {
 		super();
 	}
 
-	public RepairService(int id, String code, double baseCharge, DefectiveItem defectiveItem, Customer customer, Clerk createdBy) {
+	public RepairService(int id, String code, double baseCharge, String description, DefectiveItem defectiveItem, Customer customer, Clerk createdBy) {
 		super();
 		this.id = id;
 		this.code = code;
 		this.baseCharge = baseCharge;
+		this.description = description;
 		this.defectiveItem = defectiveItem;
 		this.customer = customer;
 		this.createdBy = createdBy;
@@ -83,6 +85,16 @@ public class RepairService {
 
 	public void setLatestStatus(String latestStatus) {
 		this.latestStatus = latestStatus;
+	}
+
+	
+	
+	public String getDescription() {
+		return description;
+	}
+
+	public void setDescription(String description) {
+		this.description = description;
 	}
 
 	public DefectiveItem getDefectiveItem() {
@@ -146,9 +158,9 @@ public class RepairService {
 	@Override
 	public String toString() {
 		return "RepairService [id=" + id + ", code=" + code + ", baseCharge=" + baseCharge + ", latestStatus="
-				+ latestStatus + ", defectiveItem=" + defectiveItem + ", customer=" + customer + ", createdAt="
-				+ createdAt + ", updatedAt=" + updatedAt + ", createdBy=" + createdBy + ", assignedTo=" + assignedTo
-				+ ", isRepaired=" + isRepaired + "]";
+				+ latestStatus + ", description=" + description + ", defectiveItem=" + defectiveItem + ", customer="
+				+ customer + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", createdBy=" + createdBy
+				+ ", assignedTo=" + assignedTo + ", isRepaired=" + isRepaired + "]";
 	}
 	
 	

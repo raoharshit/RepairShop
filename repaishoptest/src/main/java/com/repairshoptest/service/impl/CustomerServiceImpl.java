@@ -7,25 +7,31 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.repairshoptest.dto.CustomerRequestDTO;
+import com.repairshoptest.dto.PasswordChangeRequest;
+import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
-import com.repairshoptest.model.User;
 import com.repairshoptest.repository.CustomerRepo;
 import com.repairshoptest.service.ClerkService;
 import com.repairshoptest.service.CustomerService;
+import com.repairshoptest.utils.PasswordGenerator;
 
 @Service
 public class CustomerServiceImpl implements CustomerService{
 	
 	@Autowired
-	CustomerRepo customerRepo;
+	private CustomerRepo customerRepo;
 	
 	@Autowired
-	ClerkService clerkService;
+	private ClerkService clerkService;
+	
+	@Autowired
+	private PasswordEncoder passwordEncoder;
 
 
 
@@ -33,30 +39,30 @@ public class CustomerServiceImpl implements CustomerService{
 	public Customer findById(int custId) {
 		Optional<Customer> optCustomer = customerRepo.findById(custId);
 		if(optCustomer.isEmpty()) {
-			//throws new Exception("Customer not found");
+			//throw new Exception("Customer not found");
 			return null;
 		}
 		return optCustomer.get();
 	}
 	
-	@Override
-	public Customer findByEmail(String email) {
-		Customer customer = customerRepo.findByEmail(email);
-		if(customer == null) {
-			//throw new Exception("Customer not found");
-			return null;
-		}
-		return customer;
-	}
+//	@Override
+//	public Customer findByEmail(String email) {
+//		Customer customer = customerRepo.findByEmail(email);
+//		if(customer == null) {
+//			//throw new Exception("Customer not found");
+//			return null;
+//		}
+//		return customer;
+//	}
 	
 	@Override
-	public Customer authenticateUser(String userName, String password) {
-		System.out.println(userName);
-		System.out.println(password);
-		System.out.println("in customer login");
+	public Customer authenticateCustomer(String userName, String password) {
 		Customer customer = customerRepo.findByEmail(userName);
-		System.out.println(customer.getName());
-		if(customer != null && customer.getHashedPassword().equals(password)) {
+		if(customer == null) {
+			// throw new exception("User not found");
+			return null;
+		}
+		if(passwordEncoder.matches(password, customer.getHashedPassword())) {
 			return customer;
 		}
 		//throw new Exception("Invalid User");
@@ -65,12 +71,12 @@ public class CustomerServiceImpl implements CustomerService{
 	
 	
 
-	@Override
-	public List<Customer> findAll() {
-		// TODO Auto-generated method stub
-		List<Customer> list = customerRepo.findAll();
-		return list;
-	}
+//	@Override
+//	public List<Customer> findAll() {
+//		// TODO Auto-generated method stub
+//		List<Customer> list = customerRepo.findAll();
+//		return list;
+//	}
 	
 	
 //	@Override
@@ -102,20 +108,15 @@ public class CustomerServiceImpl implements CustomerService{
 		if(customerRepo.findByEmail(customerRequestDTO.getEmail()) != null ) {
 			// throw new Exception(Customer with same email is already present);
 			return null;
-		}else {
+		}
 			Customer customer = customerRequestDTO.getCustomer();
-			//create password code
+			String password = PasswordGenerator.generatePassword();
 			//send password code
-			//hash password code
-//			customer.setHashedPassword(password);
+			String hashedPassword = passwordEncoder.encode(password);
+			customer.setHashedPassword(hashedPassword);
 			customer.setCreatedBy(clerk);
 			Customer saved = customerRepo.save(customer);
 			return saved;
-		}
-		
-		
-		
-		
 	}
 
 
@@ -151,41 +152,28 @@ public class CustomerServiceImpl implements CustomerService{
 	
 	@Override
 	@Transactional
-	public boolean updatePassword(int custId, String password) {
+	public PasswordChangeResponse updatePassword(int custId,PasswordChangeRequest passwordChangeRequest) {
 		// TODO Auto-generated method stub
 
 
 		Optional<Customer> optCustomer = customerRepo.findById(custId);
 		if(optCustomer.isEmpty()) {
 			//throw new Exception("Customer not found");
-			return false;
-		}else {
-			Customer customer = optCustomer.get();
-			//Hashing algorithm code
-			// String hashedPassword = hashPassword(password);
-			//customer.setHashedPassword(hashedPassword);
-			customerRepo.save(customer);
-			return true;
-
-
+			return null;
 		}
+			Customer customer = optCustomer.get();
+			if(passwordEncoder.matches(passwordChangeRequest.getOldPassword(),customer.getHashedPassword())) {
+				String hashedPasssword = passwordEncoder.encode(passwordChangeRequest.getNewPassword());
+				customer.setHashedPassword(hashedPasssword);
+				customerRepo.save(customer);
+				PasswordChangeResponse passwordChangeResponse = new PasswordChangeResponse("Password changed successfully");
+				return passwordChangeResponse;
+			}
+			// throw new Exception("Old password is incorrect:);
+			return null;
+			
 	  
 	}
 
-	
-
-
-
-	
-
-
-
-	
-
-
-
-
-
-	
 	
 }

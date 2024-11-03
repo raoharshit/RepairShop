@@ -8,20 +8,20 @@ public class RepairPersonResponseDTO {
 	private String email;
 	private String phone;
 	private String address;
-	private String speciality;
+	private String specialty;
 	
 	public RepairPersonResponseDTO() {
 		super();
 	}
 
-	public RepairPersonResponseDTO(int id, String name, String email, String phone, String address, String speciality) {
+	public RepairPersonResponseDTO(int id, String name, String email, String phone, String address, String specialty) {
 		super();
 		this.id = id;
 		this.name = name;
 		this.email = email;
 		this.phone = phone;
 		this.address = address;
-		this.speciality = speciality;
+		this.specialty = specialty;
 	}
 
 	public int getId() {
@@ -64,18 +64,18 @@ public class RepairPersonResponseDTO {
 		this.address = address;
 	}
 
-	public String getSpeciality() {
-		return speciality;
+	public String getSpecialty() {
+		return specialty;
 	}
 
-	public void setSpeciality(String speciality) {
-		this.speciality = speciality;
+	public void setSpecialty(String speciality) {
+		this.specialty = speciality;
 	}
 
 	@Override
 	public String toString() {
 		return "RepairPersonRespnseDTO [id=" + id + ", name=" + name + ", email=" + email + ", phone=" + phone
-				+ ", address=" + address + ", speciality=" + speciality + "]";
+				+ ", address=" + address + ", speciality=" + specialty + "]";
 	}
 	
 	public static RepairPersonResponseDTO fromEntity(RepairPerson repairPerson) {
@@ -85,8 +85,7 @@ public class RepairPersonResponseDTO {
 		dto.setEmail(repairPerson.getEmail());
 		dto.setPhone(repairPerson.getPhone());
 		dto.setAddress(repairPerson.getAddress());
-		dto.setSpeciality(repairPerson.getSpeciality());
-		
+		dto.setSpecialty(repairPerson.getSpecialty());
 		return dto;
 		
 		
