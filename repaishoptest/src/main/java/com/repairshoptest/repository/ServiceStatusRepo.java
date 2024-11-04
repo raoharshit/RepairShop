@@ -10,9 +10,9 @@ import org.springframework.stereotype.Repository;
 import com.repairshoptest.model.ServiceStatus;
 
 @Repository
-public interface ServiceStatusRepo extends JpaRepository<ServiceStatus, Integer>{
-	
-	 @Query("SELECT ss FROM ServiceStatus ss WHERE ss.repairService.id = :serviceId")
-	 List<ServiceStatus> findByRepairServiceId(@Param("serviceId") int serviceId);
+public interface ServiceStatusRepo extends JpaRepository<ServiceStatus, Integer> {
+
+	@Query("SELECT ss FROM ServiceStatus ss WHERE ss.repairService.id = :serviceId" + "ORDER BY r.updatedAt DESC")
+	List<ServiceStatus> findByRepairServiceId(@Param("serviceId") int serviceId);
 
 }

@@ -12,27 +12,24 @@ import org.springframework.stereotype.Repository;
 import com.repairshoptest.model.AdditionalItemRFA;
 
 @Repository
-public interface RFARepo extends JpaRepository<AdditionalItemRFA, Integer>{
+public interface RFARepo extends JpaRepository<AdditionalItemRFA, Integer> {
 
-	@Query("SELECT r FROM AdditionalItemRFA r " +
-			"JOIN r.repairService s " +
-			"JOIN s.customer c " +
-			"WHERE c.id = :customerId " +
-			"AND (:search = '' OR LOWER(s.defectiveItem.title) LIKE LOWER(CONCAT('%', :search, '%')))"+
-	"AND s.latestStatus != 'Closed'")
-Page<AdditionalItemRFA> findByCustomerAndDefectiveItemTitle(@Param("customerId") int custId, 
-		@Param("search") String search, 
-		Pageable pageable);
+	@Query("SELECT r FROM AdditionalItemRFA r " + "JOIN r.repairService s " + "JOIN s.customer c "
+			+ "WHERE c.id = :customerId "
+			+ "AND (:search = '' OR LOWER(s.defectiveItem.title) LIKE LOWER(CONCAT('%', :search, '%')))"
+			+ "AND s.latestStatus != 'Closed'"+
+		       "ORDER BY r.updatedAt DESC")
+	Page<AdditionalItemRFA> findByCustomerAndDefectiveItemTitle(@Param("customerId") int custId,
+			@Param("search") String search, Pageable pageable);
 
-@Query("SELECT r FROM AdditionalItemRFA r " +
-		"JOIN r.repairService s " +
-		"JOIN s.assignedTo rp " +
-		"WHERE rp.id = :repairPersonId " +
-		"AND (:search = '' OR LOWER(s.defectiveItem.title) LIKE LOWER(CONCAT('%', :search, '%')))")
-Page<AdditionalItemRFA> findByRepairPersonAndDefectiveItemTitle(@Param("repairPersonId") int repairId, 
-		@Param("search") String search, 
-		Pageable pageable);
-@Query("SELECT r FROM AdditionalItemRFA r WHERE r.repairService.id = :serviceId")
-List<AdditionalItemRFA> findByRepairService(@Param("serviceId") int serviceId);
+	@Query("SELECT r FROM AdditionalItemRFA r " + "JOIN r.repairService s " + "JOIN s.assignedTo rp "
+			+ "WHERE rp.id = :repairPersonId "
+			+ "AND (:search = '' OR LOWER(s.defectiveItem.title) LIKE LOWER(CONCAT('%', :search, '%')))"+
+		       "ORDER BY r.updatedAt DESC")
+	Page<AdditionalItemRFA> findByRepairPersonAndDefectiveItemTitle(@Param("repairPersonId") int repairId,
+			@Param("search") String search, Pageable pageable);
+
+	@Query("SELECT r FROM AdditionalItemRFA r WHERE r.repairService.id = :serviceId")
+	List<AdditionalItemRFA> findByRepairService(@Param("serviceId") int serviceId);
 
 }

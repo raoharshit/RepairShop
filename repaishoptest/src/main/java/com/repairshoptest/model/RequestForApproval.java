@@ -30,10 +30,10 @@ public abstract class RequestForApproval {
 	@Column(columnDefinition = "varchar(255) default 'waiting for approval'")
 	private String approvalStatus;
 	private LocalDateTime statusUpdatedAt;
-	
+
 	@ManyToOne
 	private Invoice invoice;
-	
+
 	@ManyToOne
 	private RepairService repairService;
 
@@ -42,7 +42,8 @@ public abstract class RequestForApproval {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
-	public RequestForApproval(int id, String description, Double serviceCharge, String label, RepairService repairService) {
+	public RequestForApproval(int id, String description, Double serviceCharge, String label,
+			RepairService repairService) {
 		super();
 		this.id = id;
 		this.description = description;
@@ -142,7 +143,5 @@ public abstract class RequestForApproval {
 				+ ", invoice=" + invoice + ", repairService=" + repairService + ", createdAt=" + createdAt
 				+ ", updatedAt=" + updatedAt + "]";
 	}
-	
-	
 
 }

@@ -20,13 +20,13 @@ public interface CustomerRepo extends JpaRepository<Customer, Integer>{
 	
 	@Query("SELECT c FROM Customer c WHERE " +
 	           "(c.name LIKE %:search% OR c.email LIKE %:search%) AND " +
-	           "(:onlyMine = false OR c.createdBy.id = :clerkId)")
+	           "(:onlyMine = false OR c.createdBy.id = :clerkId)"+
+		       "ORDER BY c.updatedAt DESC")
 	    Page<Customer> findBySearchAndCreatedBy(@Param("search") String search,
 	    		                                @Param("onlyMine") Boolean onlyMine,
 	                                            @Param("clerkId") int clerkId,
 	                                            Pageable pageable);
 	
-//	List<Customer> findByCreatedBy(User createdBy);
 	
 	Customer findByEmail(String email);
 	

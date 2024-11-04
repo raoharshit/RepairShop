@@ -35,15 +35,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         
-        // Step 1: Extract JWT token from the Authorization header
-    	System.out.println("in jwt");
     	String requestPath = request.getRequestURI();
         if (requestPath.equals("/login") || requestPath.equals("/register")) {
             filterChain.doFilter(request, response);
             return;
         }
     	String jwt = getJwtFromCookie(request);
-    	System.out.println(jwt);
         if (jwt != null && !jwtUtil.isTokenValid(jwt)) {
         	
             int userId = jwtUtil.extractUserId(jwt);
@@ -55,8 +52,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             	return;
             }
             
-            
-         // Step 4: Authorization logic based on user type and endpoint
             String requestUri = request.getRequestURI();
             if (requestUri.startsWith("/clerk") && !(user instanceof Clerk)) {
                 response.sendError(HttpServletResponse.SC_FORBIDDEN, "User does not have access to Clerk resources.");
@@ -69,7 +64,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 return;
             }
             
-//            UserContextHolder.setUserId(Integer.toString(userId));
             UsernamePasswordAuthenticationToken authentication =
                     new UsernamePasswordAuthenticationToken(Integer.toString(userId), null, new ArrayList<>());
 
@@ -80,20 +74,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         	return ;
         }
 
-            
-
-            // If all checks pass, continue the filter chain
             filterChain.doFilter(request, response);
 
         }
     
-//    private String extractJwtFromRequest(HttpServletRequest request) {
-//        String bearerToken = request.getHeader("Authorization");
-//        if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-//            return bearerToken.substring(7);
-//        }
-//        return null;
-//    }
     
     private String getJwtFromCookie(HttpServletRequest request) {
         if (request.getCookies() != null) {
