@@ -26,7 +26,7 @@ public class LoginController {
     	try {
     		LoginResponse loginResponse = loginService.authenticateUser(loginRequest);
     		HttpHeaders headers = new HttpHeaders();
-    		headers.add("Set-cookie","Authorization=Bearer " + loginResponse.getToken());
+    		headers.add("Set-cookie","jwt=" + loginResponse.getToken());
         	return ResponseEntity.ok().headers(headers).body(loginResponse.getMessage());
     	}catch(ResourceNotFoundException ex) {
     		 return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
