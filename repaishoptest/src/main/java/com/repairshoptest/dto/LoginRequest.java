@@ -1,8 +1,18 @@
 package com.repairshoptest.dto;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 public class LoginRequest {
-	
+	    
+	    @NotNull(message = "username cannot be null")
+	    @NotBlank(message = "Username cannot be blank")
         private String userName;
+	    
+	    @NotNull(message = "password cannot be null")
+	    @NotBlank(message = "Password cannot be blank")
         private String password;
+	    
+	    @NotNull(message = "type cannot be null")
+	    @NotBlank(message = "type cannot be blank")
         private String type;
         
 		public String getUserName() {

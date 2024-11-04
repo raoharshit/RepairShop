@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.repairshop.exception.ResourceNotFoundException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.RepairService;
 import com.repairshoptest.model.ServiceStatus;
 import com.repairshoptest.repository.ServiceStatusRepo;
@@ -26,7 +26,7 @@ public class ServiceStatusServiceImpl implements ServiceStatusService{
 
 	@Override
 	@Transactional
-	public ServiceStatus createStatus(RepairService repairService) throws ResourceNotFoundException{
+	public ServiceStatus createStatus(RepairService repairService){
 		ServiceStatus serviceStatus = new ServiceStatus();
 		if(repairService == null) {
 			throw new ResourceNotFoundException("RepairService not found");

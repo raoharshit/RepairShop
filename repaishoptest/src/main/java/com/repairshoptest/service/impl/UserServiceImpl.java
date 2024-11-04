@@ -5,7 +5,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.repairshop.exception.ResourceNotFoundException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.User;
 import com.repairshoptest.repository.UserRepo;
 import com.repairshoptest.service.UserService;
@@ -17,7 +17,7 @@ public class UserServiceImpl implements UserService{
 	UserRepo userRepo;
 	
 	@Override
-	public User findById(int userId) throws ResourceNotFoundException{
+	public User findById(int userId){
 		Optional<User> optUser = userRepo.findById(userId);
 		if(optUser.isEmpty()) {
 			throw new ResourceNotFoundException("User not found");

@@ -2,6 +2,8 @@ package com.repairshoptest.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -15,14 +17,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.repairshop.exception.InvalidCredentialsException;
-import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.AdditionalItemRFAResponseDTO;
 import com.repairshoptest.dto.CustomerRequestDTO;
 import com.repairshoptest.dto.CustomerResponseDTO;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairServiceResponseDTO;
+import com.repairshoptest.exception.InvalidCredentialsException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.AdditionalItemRFA;
 import com.repairshoptest.model.Customer;
 import com.repairshoptest.model.RepairService;
@@ -35,149 +37,103 @@ import com.repairshoptest.service.ServiceStatusService;
 @RestController
 @RequestMapping("/customer")
 public class CustomerController {
-	
-//	int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-	
+
 	@Autowired
 	private CustomerService customerService;
-	
+
 	@Autowired
 	private RepairServiceService repairServiceService;
-	
+
 	@Autowired
 	private RFAService rfaService;
-	
+
 	@Autowired
 	private ServiceStatusService serviceStatusService;
-	
-	
-	
+
 	@GetMapping("/profile")
-	public ResponseEntity<?> getProfile(){
-		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		try {
-			Customer customer = customerService.findById(custId);
-			
-			return ResponseEntity.ok(CustomerResponseDTO.fromEntity(customer));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}
-		
-		
+	public ResponseEntity<?> getProfile() {
+		int custId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+		Customer customer = customerService.findById(custId);
+
+		return ResponseEntity.ok(CustomerResponseDTO.fromEntity(customer));
+
 	}
-	
+
 	@PutMapping("/profile")
 	public ResponseEntity<?> updateProfile(@RequestBody CustomerRequestDTO customerRequestDTO) {
-		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		try {
-			Customer update = customerService.update(custId, customerRequestDTO);
-			return ResponseEntity.ok(CustomerResponseDTO.fromEntity(update));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}
-		
+		int custId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+		Customer update = customerService.update(custId, customerRequestDTO);
+		return ResponseEntity.ok(CustomerResponseDTO.fromEntity(update));
+
 	}
-	
+
 	@PutMapping("/password")
 	public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
-		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		try {
-			PasswordChangeResponse passwordChangeResponse = customerService.updatePassword(custId, passwordChangeRequest);
-			return ResponseEntity.ok(passwordChangeResponse);
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}catch(InvalidCredentialsException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-		}
-		
+		int custId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+		PasswordChangeResponse passwordChangeResponse = customerService.updatePassword(custId, passwordChangeRequest);
+		return ResponseEntity.ok(passwordChangeResponse);
+
 	}
-	
+
 	@GetMapping("/services")
-	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
-		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<RepairService> servicePage = repairServiceService.getServicesForRole("customer", custId, false, search, page, limit);
-		
+	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "limit", defaultValue = "10") int limit) {
+		int custId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		Page<RepairService> servicePage = repairServiceService.getServicesForRole("customer", custId, false, search,
+				page, limit);
+
 		return ResponseEntity.ok(servicePage.map(RepairServiceResponseDTO::fromEntity));
 	}
-	
+
 	@GetMapping("/requests")
-	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
-		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String search,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "limit", defaultValue = "10") int limit) {
+		int custId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("customer", custId, search, page, limit);
-		
+
 		return ResponseEntity.ok(rfaPage.map(AdditionalItemRFAResponseDTO::fromEntity));
 	}
-	
+
 	@GetMapping("/request/{id}")
 	public ResponseEntity<?> getRequestById(@PathVariable("id") int id) {
-		try {
-			AdditionalItemRFA rfa = rfaService.findById(id);
-			return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}
-		
+
+		AdditionalItemRFA rfa = rfaService.findById(id);
+		return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+
 	}
-	
+
 	@GetMapping("/service/{id}")
 	public ResponseEntity<?> getServiceById(@PathVariable("id") int id) {
-		try {
-			RepairService repairService = repairServiceService.findById(id);
-			return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}
-		
+
+		RepairService repairService = repairServiceService.findById(id);
+		return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
+
 	}
-	
+
 	@GetMapping("/service/{id}/request")
 	public ResponseEntity<?> getApprovalsById(@PathVariable("id") int id) {
 		List<AdditionalItemRFA> list = rfaService.findByRepairServiceId(id);
 		return ResponseEntity.ok(list.stream().map(AdditionalItemRFAResponseDTO::fromEntity).toList());
 	}
-	
+
 	@GetMapping("/service/{id}/history")
 	public ResponseEntity<?> getHistoryById(@PathVariable("id") int id) {
 		List<ServiceStatus> list = serviceStatusService.findByRepairServiceId(id);
-		
+
 		return ResponseEntity.ok(list);
 	}
-	
+
 	@PutMapping("/request/{id}")
-	public ResponseEntity<?> updateRequest(@PathVariable("id") int id, @RequestParam("response") String response){
-		try {
-			boolean updateRFA = rfaService.updateRFA(id, response);
-			return ResponseEntity.ok("Request " + response);
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}catch(Exception ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
+	public ResponseEntity<?> updateRequest(@PathVariable("id") int id, @RequestParam("response") String response) {
+
+		boolean updateRFA = rfaService.updateRFA(id, response);
+		return ResponseEntity.ok("Request " + response);
+
 	}
-	
-//	@GetMapping("/customer/profile/byemail")
-//	public Customer findCustomerByEmail(@RequestParam("email") String email) {
-//		Customer customer = customerService.findByEmail(email);
-//		return customer;
-//	}
-	
-//	@PutMapping("/clerk/customers")
-//	public Page<Customer> findCustomers(@RequestParam(value="search", defaultValue="") String search,@RequestParam(value="onlyMine", defaultValue="false") boolean onlyMine, @RequestParam(value="page",defaultValue="0") int page, @RequestParam(value="limit",defaultValue="10") int limit,@RequestHeader("clerkId") int clerkId) {
-//		Page<Customer> customers = customerService.getCustomers(search, onlyMine, clerkId, page, limit);
-//		return customers;
-//	}
-//	
-//	@GetMapping("/clerk/allcustomers")
-//	public List<Customer> findAllCustomers() {
-//		List<Customer> customers = customerService.findAll();
-//		return customers;
-//	}
-//	
-//	@PostMapping("/clerk/createcustomer")
-//	public Customer createCustomer(@RequestBody CustomerRequestDTO customerRequestDTO, @RequestHeader("clerkId") int clerkId) {
-//		Customer customer = customerService.add(clerkId, customerRequestDTO );
-//		return customer;
-//	}
 
 }

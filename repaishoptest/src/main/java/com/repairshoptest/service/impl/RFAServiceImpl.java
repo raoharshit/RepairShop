@@ -11,8 +11,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
-import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.AdditionalItemRFARequestDTO;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.AdditionalItemRFA;
 import com.repairshoptest.model.NewItem;
 import com.repairshoptest.model.RepairService;
@@ -47,7 +47,7 @@ public class RFAServiceImpl implements RFAService{
 	    switch (role) {
 	        case "customer":
 	            return rfaRepo.findByCustomerAndDefectiveItemTitle(userId, search, pageable);
-	        case "repairPerson":
+	        case "repairperson":
 	            return rfaRepo.findByRepairPersonAndDefectiveItemTitle(userId, search, pageable);
 	        default:
 	            throw new IllegalArgumentException("Invalid role");
@@ -55,7 +55,7 @@ public class RFAServiceImpl implements RFAService{
 	}
 	
 	@Override
-	public AdditionalItemRFA findById(int id) throws ResourceNotFoundException{
+	public AdditionalItemRFA findById(int id){
 		Optional<AdditionalItemRFA> optRFA = rfaRepo.findById(id);
 		if(optRFA.isEmpty()) {
 			throw new ResourceNotFoundException("No rfa found");
@@ -72,7 +72,7 @@ public class RFAServiceImpl implements RFAService{
 	
 	@Override
 	@Transactional
-	public AdditionalItemRFA createRFA(int serviceId, AdditionalItemRFARequestDTO dto) throws Exception {
+	public AdditionalItemRFA createRFA(int serviceId, AdditionalItemRFARequestDTO dto){
 		RepairService repairService = repairServiceService.findById(serviceId);
 		NewItem newItem = newItemService.findById(dto.getNewItemId());
 		repairService.setLatestStatus("Waiting for Approval");
@@ -88,14 +88,14 @@ public class RFAServiceImpl implements RFAService{
 			if(status != null) {
 				return save;
 			}
-			throw new Exception("Could not create service status due to some error occurred");
+			throw new RuntimeException("Could not create service status due to some error occurred");
 		}
-		throw new Exception("Could not create additional item request due to some error occurred");
+		throw new RuntimeException("Could not create additional item request due to some error occurred");
 	}
 
 	@Override
 	@Transactional
-	public boolean updateRFA(int id, String response) throws Exception{
+	public boolean updateRFA(int id, String response){
 		Optional<AdditionalItemRFA> optRFA = rfaRepo.findById(id);
 		if(optRFA.isEmpty()) {
 			throw new ResourceNotFoundException("Request not found");
@@ -109,9 +109,9 @@ public class RFAServiceImpl implements RFAService{
 				if(status != null) {
 					return true;
 				}
-				throw new Exception("Could not create service status due to some error occurred");
+				throw new RuntimeException("Could not create service status due to some error occurred");
 			}
-			throw new Exception("Could not update additional item request due to some error occurred");
+			throw new RuntimeException("Could not update additional item request due to some error occurred");
 			
 	}
 

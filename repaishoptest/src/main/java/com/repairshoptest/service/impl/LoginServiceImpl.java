@@ -3,10 +3,10 @@ package com.repairshoptest.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.repairshop.exception.InvalidCredentialsException;
-import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.LoginRequest;
 import com.repairshoptest.dto.LoginResponse;
+import com.repairshoptest.exception.InvalidCredentialsException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.User;
 import com.repairshoptest.service.ClerkService;
 import com.repairshoptest.service.CustomerService;
@@ -30,7 +30,7 @@ public class LoginServiceImpl implements LoginService{
 	private JwtUtil jwtUtil;
 
 	@Override
-	public LoginResponse authenticateUser(LoginRequest loginRequest) throws ResourceNotFoundException,InvalidCredentialsException{
+	public LoginResponse authenticateUser(LoginRequest loginRequest){
 		User user;
 		if(loginRequest.getType().equals("customer")) {
 			user = customerService.authenticateCustomer(loginRequest.getUserName(), loginRequest.getPassword());

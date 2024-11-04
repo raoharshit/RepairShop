@@ -9,9 +9,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.repairshop.exception.InvalidCredentialsException;
-import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.RepairServiceRequestDTO;
+import com.repairshoptest.exception.InvalidCredentialsException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
 import com.repairshoptest.model.DefectiveItem;
@@ -48,14 +48,8 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 	@Autowired
 	private RepairPersonService repairPersonService;
 	
-//	@Override
-//	public List<RepairService> findAll() {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-
 	@Override
-	public RepairService findById(int id) throws ResourceNotFoundException{
+	public RepairService findById(int id){
 		// TODO Auto-generated method stub
 		Optional<RepairService> optRS = repairServiceRepo.findById(id);
 		if(optRS.isEmpty()) {
@@ -63,18 +57,7 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 		}
 		return optRS.get();
 	}
-
-//	@Override
-//	public List<RepairService> findByCustomer(Customer customer) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
-//
-//	@Override
-//	public List<RepairService> findByClerk(Clerk clerk) {
-//		// TODO Auto-generated method stub
-//		return null;
-//	}
+	
 	
 	@Override
 	public Page<RepairService> getServicesForRole(String role, int userId, Boolean onlyMine, String search, int page,
@@ -96,17 +79,14 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 
 	@Override
 	@Transactional
-	public RepairService add(int clerkId, RepairServiceRequestDTO repairServiceRequestDTO) throws Exception {
-//		System.out.println(clerkId);
-//		System.out.println(repairServiceRequestDTO.getCustId());
-//		System.out.println(repairServiceRequestDTO.getRepairId());
+	public RepairService add(int clerkId, RepairServiceRequestDTO repairServiceRequestDTO){
 		Clerk clerk = clerkService.findById(clerkId);
 		Customer customer = customerService.findById(repairServiceRequestDTO.getCustId());
 		RepairPerson repairPerson = repairPersonService.findById(repairServiceRequestDTO.getRepairId());
 		
 			RepairService repairService = repairServiceRequestDTO.getRepairService();
 			repairService.setCode(ServiceCodeGenerator.generateServiceCode());
-			DefectiveItem defectiveItem = defectiveItemService.add(clerk, customer, repairServiceRequestDTO);
+			DefectiveItem defectiveItem = defectiveItemService.add(clerk, customer, repairServiceRequestDTO.getDefectiveItem());
 			repairService.setDefectiveItem(defectiveItem);
 			repairService.setCreatedBy(clerk);
 			repairService.setCustomer(customer);
@@ -118,13 +98,14 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 				if(status != null) {
 					return save;
 				}
-				throw new Exception("Could not create service status due to some error");
+				throw new RuntimeException("Could not create service status due to some error");
 			}
-			throw new Exception("Could not create service due to some error");
+			throw new RuntimeException("Could not create service due to some error");
 		
 	}
+	
 	@Override
-	public boolean closeService(int id) throws Exception{
+	public boolean closeService(int id){
 		Optional<RepairService> optRepairService = repairServiceRepo.findById(id);
 		if(optRepairService.isEmpty()) {
 			throw new ResourceNotFoundException("Service not found");
@@ -133,14 +114,14 @@ public class RepairServiceServiceImpl implements RepairServiceService{
 		repairService.setLatestStatus("Closed");
 		RepairService save = repairServiceRepo.save(repairService);
 		if(save == null) {
-			throw new Exception("Could not close service due to Some error occurred");
+			throw new RuntimeException("Could not close service due to Some error occurred");
 		}
 		
 		ServiceStatus status = serviceStatusService.createStatus(repairService);
 		if(status != null) {
 			return true;
 		}
-		throw new Exception("Could not create service status due to some error");
+		throw new RuntimeException("Could not create service status due to some error");
 	}
 
 	

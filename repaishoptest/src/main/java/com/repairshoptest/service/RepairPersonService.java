@@ -2,34 +2,26 @@ package com.repairshoptest.service;
 
 import org.springframework.data.domain.Page;
 
-import com.repairshop.exception.DuplicateUserException;
-import com.repairshop.exception.InvalidCredentialsException;
-import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairPersonRequestDTO;
+import com.repairshoptest.exception.DuplicateUserException;
+import com.repairshoptest.exception.InvalidCredentialsException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.RepairPerson;
 
 public interface RepairPersonService {
 	
-	RepairPerson findById(int id) throws ResourceNotFoundException;
+	RepairPerson findById(int id);
 	
-//	RepairPerson findByEmail(String email);
-	
-	public RepairPerson authenticateRepairPerson(String userName, String password) throws InvalidCredentialsException;
-	
-//	List<RepairPerson> findBySpecialty(String specialty);
-	
-//	List<RepairPerson> findAll();
+	public RepairPerson authenticateRepairPerson(String userName, String password);
 	
 	Page<RepairPerson> findBySearch(String search, int page, int limit, String specialty);
 	
-	RepairPerson add(RepairPersonRequestDTO repairPersonRequestDTO) throws DuplicateUserException;
+	RepairPerson add(RepairPersonRequestDTO repairPersonRequestDTO);
 	
-	RepairPerson update(int repairPersonId, RepairPersonRequestDTO repairPersonRequestDTO) throws ResourceNotFoundException;
+	RepairPerson update(int repairPersonId, RepairPersonRequestDTO repairPersonRequestDTO);
 	
-//	boolean remove(int repairPersonId);
-	
-	PasswordChangeResponse updatePassword(int repairPersonId, PasswordChangeRequest passwordChangeRequest) throws ResourceNotFoundException,InvalidCredentialsException;
+	PasswordChangeResponse updatePassword(int repairPersonId, PasswordChangeRequest passwordChangeRequest);
 
 }

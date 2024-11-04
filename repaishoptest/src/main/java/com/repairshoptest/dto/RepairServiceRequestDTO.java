@@ -1,16 +1,43 @@
 package com.repairshoptest.dto;
 
-import com.repairshoptest.model.DefectiveItem;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
+
 import com.repairshoptest.model.RepairService;
 
 public class RepairServiceRequestDTO {
 	
+	@NotNull(message = "basecharge cannot be null")
+    @NotBlank(message = "basecharge cannot be blank")
+	@PositiveOrZero(message = "basecharge should be positive")
 	private double baseCharge;
+	
+	@NotNull(message = "productcode cannot be null")
+    @NotBlank(message = "productcode cannot be blank")
 	private String productCode;
+	
+	@NotNull(message = "producttitle cannot be null")
+    @NotBlank(message = "producttitle cannot be blank")
 	private String productTitle;
+	
+	@NotNull(message = "productcategory cannot be null")
+    @NotBlank(message = "productcategory cannot be blank")
 	private String productCategory;
+	
+	@NotNull(message = "productcategory cannot be null")
+    @NotBlank(message = "productcategory cannot be blank")
 	private String desrciption;
+	
+	@NotNull(message = "basecharge cannot be null")
+    @NotBlank(message = "basecharge cannot be blank")
+	@Positive(message = "basecharge should be positive")
 	private int custId;
+	
+	@NotNull(message = "basecharge cannot be null")
+    @NotBlank(message = "basecharge cannot be blank")
+	@Positive(message = "basecharge should be positive")
 	private int repairId;
 	
 	public RepairServiceRequestDTO() {
@@ -122,6 +149,14 @@ public class RepairServiceRequestDTO {
 		repairService.setBaseCharge(this.baseCharge);
 		repairService.setDescription(this.desrciption);
 	    return repairService;
+	}
+	
+	public DefectiveItemDTO getDefectiveItem() {
+		DefectiveItemDTO dto = new DefectiveItemDTO();
+		dto.setTitle(this.productTitle);
+		dto.setProductCode(this.productCode);
+		dto.setCategory(this.productCategory);
+		return dto;
 	}
 
 }

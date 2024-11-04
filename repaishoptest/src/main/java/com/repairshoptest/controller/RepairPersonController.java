@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.repairshop.exception.InvalidCredentialsException;
-import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.AdditionalItemRFARequestDTO;
 import com.repairshoptest.dto.AdditionalItemRFAResponseDTO;
 import com.repairshoptest.dto.PasswordChangeRequest;
@@ -25,6 +23,8 @@ import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairPersonRequestDTO;
 import com.repairshoptest.dto.RepairPersonResponseDTO;
 import com.repairshoptest.dto.RepairServiceResponseDTO;
+import com.repairshoptest.exception.InvalidCredentialsException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.AdditionalItemRFA;
 import com.repairshoptest.model.RepairPerson;
 import com.repairshoptest.model.RepairService;
@@ -37,160 +37,110 @@ import com.repairshoptest.service.ServiceStatusService;
 @RestController
 @RequestMapping("/repairperson")
 public class RepairPersonController {
-	
+
 	@Autowired
 	private RepairPersonService repairPersonService;
-	
+
 	@Autowired
 	private RepairServiceService repairServiceService;
-	
+
 	@Autowired
 	private RFAService rfaService;
-	
+
 	@Autowired
 	private ServiceStatusService serviceStatusService;
-	
+
 	@GetMapping("/profile")
-	public ResponseEntity<?> getProfile(){
-		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		try {
-			RepairPerson repairPerson = repairPersonService.findById(repairId);
-			return ResponseEntity.ok(RepairPersonResponseDTO.fromEntity(repairPerson));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}
-		
-		
+	public ResponseEntity<?> getProfile() {
+		int repairId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+		RepairPerson repairPerson = repairPersonService.findById(repairId);
+		return ResponseEntity.ok(RepairPersonResponseDTO.fromEntity(repairPerson));
 	}
-	
+
 	@PutMapping("/profile")
 	public ResponseEntity<?> updateProfile(@RequestBody RepairPersonRequestDTO repairPersonRequestDTO) {
-		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		try {
-			RepairPerson repairPerson = repairPersonService.update(repairId, repairPersonRequestDTO);
-			return ResponseEntity.ok(RepairPersonResponseDTO.fromEntity(repairPerson));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}
-		
+		int repairId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+		RepairPerson repairPerson = repairPersonService.update(repairId, repairPersonRequestDTO);
+		return ResponseEntity.ok(RepairPersonResponseDTO.fromEntity(repairPerson));
+
 	}
-	
+
 	@PutMapping("/password")
 	public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
-		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		try {
-			PasswordChangeResponse passwordChangeResponse = repairPersonService.updatePassword(repairId, passwordChangeRequest);
-			return ResponseEntity.ok(passwordChangeResponse);
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}catch(InvalidCredentialsException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
-		}
-		
+		int repairId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+
+		PasswordChangeResponse passwordChangeResponse = repairPersonService.updatePassword(repairId,
+				passwordChangeRequest);
+		return ResponseEntity.ok(passwordChangeResponse);
+
 	}
-	
+
 	@GetMapping("/services")
-	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
-		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<RepairService> servicePage = repairServiceService.getServicesForRole("repairperson", repairId, false, search, page, limit);
-		
+	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "limit", defaultValue = "10") int limit) {
+		int repairId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		Page<RepairService> servicePage = repairServiceService.getServicesForRole("repairperson", repairId, false,
+				search, page, limit);
+
 		return ResponseEntity.ok(servicePage.map(RepairServiceResponseDTO::fromEntity));
 	}
-	
+
 	@GetMapping("/requests")
-	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
-		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String search,
+			@RequestParam(value = "page", defaultValue = "0") int page,
+			@RequestParam(value = "limit", defaultValue = "10") int limit) {
+		int repairId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("repairperson", repairId, search, page, limit);
-		
+
 		return ResponseEntity.ok(rfaPage.map(AdditionalItemRFAResponseDTO::fromEntity));
 	}
-	
+
 	@GetMapping("/request/{id}")
 	public ResponseEntity<?> getRequestById(@PathVariable("id") int id) {
-		try {
-			AdditionalItemRFA rfa = rfaService.findById(id);
-			return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}
-		
+
+		AdditionalItemRFA rfa = rfaService.findById(id);
+		return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+
 	}
-	
+
 	@GetMapping("/service/{id}")
 	public ResponseEntity<?> getServiceById(@PathVariable("id") int id) {
-		try {
-			RepairService repairService = repairServiceService.findById(id);
-			return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}
-		
+
+		RepairService repairService = repairServiceService.findById(id);
+		return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
+
 	}
-	
+
 	@GetMapping("/service/{id}/request")
 	public ResponseEntity<?> getApprovalsById(@PathVariable("id") int id) {
 		List<AdditionalItemRFA> list = rfaService.findByRepairServiceId(id);
-		
+
 		return ResponseEntity.ok(list.stream().map(AdditionalItemRFAResponseDTO::fromEntity).toList());
 	}
-	
+
 	@GetMapping("/service/{id}/history")
 	public ResponseEntity<?> getHistoryById(@PathVariable("id") int id) {
 		List<ServiceStatus> list = serviceStatusService.findByRepairServiceId(id);
-		
+
 		return ResponseEntity.ok(list);
 	}
-	
+
 	@PostMapping("/service/{id}/request")
-	public ResponseEntity<?> createRequest(@PathVariable("id") int id, @RequestBody AdditionalItemRFARequestDTO dto){
-		try {
-			AdditionalItemRFA rfa = rfaService.createRFA(id, dto);
-			return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}catch(Exception ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
+	public ResponseEntity<?> createRequest(@PathVariable("id") int id, @RequestBody AdditionalItemRFARequestDTO dto) {
+
+		AdditionalItemRFA rfa = rfaService.createRFA(id, dto);
+		return ResponseEntity.ok(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+
 	}
-	
+
 	@PutMapping("/service/{id}/close")
 	public ResponseEntity<?> closeRepairService(@PathVariable("id") int id) {
-		
-		try {
-			boolean closeService = repairServiceService.closeService(id);
-			return ResponseEntity.ok("Service closed successfully");
-		}catch(ResourceNotFoundException ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
-		}catch(Exception ex) {
-			return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
-		}
-		
-		
-	}
-	
-//	@GetMapping("/byid")
-//	public RepairPerson findRepairPersonById(@RequestHeader(value = "repairId") int repairId) {
-//		RepairPerson repairPerson = repairPersonService.findById(repairId);
-//		return repairPerson;
-//	}
-//	
-//	@GetMapping("/byemail")
-//	public RepairPerson findRepairPersonByEmail(@RequestParam(value = "email") String email) {
-//		RepairPerson repairPerson = repairPersonService.findByEmail(email);
-//		return repairPerson;
-//	}
-//	
-//	@PostMapping("/addRepairPerson")
-//	public RepairPerson addRepairPerson(@RequestBody RepairPersonRequestDTO repairPersonRequestDTO) {
-//		RepairPerson repairPerson = repairPersonService.add(repairPersonRequestDTO);
-//		return repairPerson;
-//	}
-//	
-//	@PostMapping("/updateRepairPerson")
-//	public RepairPerson updateRepairPerson(@RequestHeader("repairId") int repairId, @RequestBody RepairPersonRequestDTO repairPersonRequestDTO) {
-//		RepairPerson repairPerson = repairPersonService.update(repairId,repairPersonRequestDTO);
-//		return repairPerson;
-//	}
 
+		boolean closeService = repairServiceService.closeService(id);
+		return ResponseEntity.ok("Service closed successfully");
+
+	}
 }

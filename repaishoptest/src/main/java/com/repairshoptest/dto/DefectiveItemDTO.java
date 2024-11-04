@@ -1,12 +1,22 @@
 package com.repairshoptest.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.repairshoptest.model.DefectiveItem;
 
 public class DefectiveItemDTO {
 	
+	@NotNull(message = "productcode cannot be null")
+    @NotBlank(message = "productcode cannot be blank")
 	private String productCode;
+	
+	@NotNull(message = "title cannot be null")
+    @NotBlank(message = "title cannot be blank")
 	private String title;
-	private String description;
+	
+	@NotNull(message = "category cannot be null")
+    @NotBlank(message = "category cannot be blank")
 	private String category;
 	
 	
@@ -19,11 +29,10 @@ public class DefectiveItemDTO {
 
 
 
-	public DefectiveItemDTO(String productCode, String title, String description, String category) {
+	public DefectiveItemDTO(String productCode, String title, String category) {
 		super();
 		this.productCode = productCode;
 		this.title = title;
-		this.description = description;
 		this.category = category;
 	}
 
@@ -53,18 +62,6 @@ public class DefectiveItemDTO {
 
 
 
-	public String getDescription() {
-		return description;
-	}
-
-
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
-
-
 	public String getCategory() {
 		return category;
 	}
@@ -77,8 +74,7 @@ public class DefectiveItemDTO {
 	
 	@Override
 	public String toString() {
-		return "DefectiveItemDTO [productCode=" + productCode + ", title=" + title + ", description=" + description
-				+ ", category=" + category + "]";
+		return "DefectiveItemDTO [productCode=" + productCode + ", title=" + title +", category=" + category + "]";
 	}
 	
 	public DefectiveItem getDefectiveItem() {
@@ -86,7 +82,6 @@ public class DefectiveItemDTO {
 		defectiveItem.setProductCode(this.productCode);
 		defectiveItem.setTitle(this.title);
 		defectiveItem.setCategory(this.category);
-		defectiveItem.setDescription(this.description);
 	    return defectiveItem;
 	}
 	

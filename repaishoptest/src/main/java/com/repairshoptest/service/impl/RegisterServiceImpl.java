@@ -2,8 +2,8 @@ package com.repairshoptest.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
-import com.repairshop.exception.DuplicateUserException;
 import com.repairshoptest.dto.ClerkRequestDTO;
 import com.repairshoptest.dto.RegisterRequest;
 import com.repairshoptest.dto.RegisterResponse;
@@ -23,7 +23,7 @@ public class RegisterServiceImpl implements RegisterService{
 	private RepairPersonService repairPersonService;
 	
 	@Override
-	public RegisterResponse registerUser(RegisterRequest registerRequest) throws DuplicateUserException {
+	public RegisterResponse registerUser(RegisterRequest registerRequest){
 		User user;
 		if(registerRequest.getType().equals("clerk")) {
 			ClerkRequestDTO clerkRequestDTO = registerRequest.getClerk();
