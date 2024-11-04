@@ -32,12 +32,12 @@ public class LoginServiceImpl implements LoginService{
 	@Override
 	public LoginResponse authenticateUser(LoginRequest loginRequest) throws ResourceNotFoundException,InvalidCredentialsException{
 		User user;
-		if(loginRequest.getType().equals("Customer")) {
+		if(loginRequest.getType().equals("customer")) {
 			user = customerService.authenticateCustomer(loginRequest.getUserName(), loginRequest.getPassword());
 		}
-		else if (loginRequest.getType().equals("Clerk")) {
+		else if (loginRequest.getType().equals("clerk")) {
 			user = clerkService.authenticateClerk(loginRequest.getUserName(), loginRequest.getPassword());
-		}else if(loginRequest.getType().equals("RepairPerson")){
+		}else if(loginRequest.getType().equals("repairperson")){
 			user = repairPersonService.authenticateRepairPerson(loginRequest.getUserName(), loginRequest.getPassword());
 		}else {
 			throw new InvalidCredentialsException("Invalid user type");

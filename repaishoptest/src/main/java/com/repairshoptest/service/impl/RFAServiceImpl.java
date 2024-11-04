@@ -45,9 +45,9 @@ public class RFAServiceImpl implements RFAService{
 		Pageable pageable = PageRequest.of(page, limit);
 
 	    switch (role) {
-	        case "Customer":
+	        case "customer":
 	            return rfaRepo.findByCustomerAndDefectiveItemTitle(userId, search, pageable);
-	        case "RepairPerson":
+	        case "repairPerson":
 	            return rfaRepo.findByRepairPersonAndDefectiveItemTitle(userId, search, pageable);
 	        default:
 	            throw new IllegalArgumentException("Invalid role");

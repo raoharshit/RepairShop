@@ -92,18 +92,18 @@ public class CustomerController {
 		
 	}
 	
-	@GetMapping("/service")
+	@GetMapping("/services")
 	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<RepairService> servicePage = repairServiceService.getServicesForRole("Customer", custId, false, search, page, limit);
+		Page<RepairService> servicePage = repairServiceService.getServicesForRole("customer", custId, false, search, page, limit);
 		
 		return ResponseEntity.ok(servicePage.map(RepairServiceResponseDTO::fromEntity));
 	}
 	
-	@GetMapping("/request")
+	@GetMapping("/requests")
 	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int custId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("Customer", custId, search, page, limit);
+		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("customer", custId, search, page, limit);
 		
 		return ResponseEntity.ok(rfaPage.map(AdditionalItemRFAResponseDTO::fromEntity));
 	}

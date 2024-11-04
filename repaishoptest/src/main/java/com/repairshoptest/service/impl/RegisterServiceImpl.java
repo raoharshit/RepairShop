@@ -25,7 +25,7 @@ public class RegisterServiceImpl implements RegisterService{
 	@Override
 	public RegisterResponse registerUser(RegisterRequest registerRequest) throws DuplicateUserException {
 		User user;
-		if(registerRequest.getType().equals("Clerk")) {
+		if(registerRequest.getType().equals("clerk")) {
 			ClerkRequestDTO clerkRequestDTO = registerRequest.getClerk();
 			user = clerkService.add(clerkRequestDTO);
 		}else {

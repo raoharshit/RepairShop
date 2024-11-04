@@ -52,7 +52,6 @@ public class RepairPersonController {
 	
 	@GetMapping("/profile")
 	public ResponseEntity<?> getProfile(){
-		System.out.println("in customer controller");
 		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		try {
 			RepairPerson repairPerson = repairPersonService.findById(repairId);
@@ -90,18 +89,18 @@ public class RepairPersonController {
 		
 	}
 	
-	@GetMapping("/service")
+	@GetMapping("/services")
 	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<RepairService> servicePage = repairServiceService.getServicesForRole("RepairPerson", repairId, false, search, page, limit);
+		Page<RepairService> servicePage = repairServiceService.getServicesForRole("repairperson", repairId, false, search, page, limit);
 		
 		return ResponseEntity.ok(servicePage.map(RepairServiceResponseDTO::fromEntity));
 	}
 	
-	@GetMapping("/request")
+	@GetMapping("/requests")
 	public ResponseEntity<?> getRequests(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int repairId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("RepairPerson", repairId, search, page, limit);
+		Page<AdditionalItemRFA> rfaPage = rfaService.findRFAForRole("repairperson", repairId, search, page, limit);
 		
 		return ResponseEntity.ok(rfaPage.map(AdditionalItemRFAResponseDTO::fromEntity));
 	}

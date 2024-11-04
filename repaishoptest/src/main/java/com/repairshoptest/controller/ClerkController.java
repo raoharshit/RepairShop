@@ -95,8 +95,8 @@ public class ClerkController {
 	public ResponseEntity<?> updatePassword(@RequestBody PasswordChangeRequest passwordChangeRequest) {
 		int clerkId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		try {
-			PasswordChangeResponse passwordChangeResponse = repairPersonService.updatePassword(clerkId, passwordChangeRequest);
-			return ResponseEntity.ok(passwordChangeResponse);
+			PasswordChangeResponse passwordChangeResponse = clerkService.updatePassword(clerkId, passwordChangeRequest);
+			return ResponseEntity.ok(passwordChangeResponse.getMessage());
 		}catch(ResourceNotFoundException ex) {
 			return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
 		}catch(InvalidCredentialsException ex) {
@@ -105,30 +105,30 @@ public class ClerkController {
 		
 	}
 	
-	@GetMapping("/customer")
+	@GetMapping("/customers")
 	public ResponseEntity<?> findCustomers(@RequestParam(value="search", defaultValue="") String search,@RequestParam(value="onlyMine", defaultValue="false") boolean onlyMine, @RequestParam(value="page",defaultValue="0") int page, @RequestParam(value="limit",defaultValue="10")int limit) {
 		int clerkId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		Page<Customer> customers = customerService.getCustomers(search, onlyMine, clerkId, page, limit);
 		return ResponseEntity.ok(customers.map(CustomerResponseDTO::fromEntity));
 	}
 	
-	@GetMapping("/service")
+	@GetMapping("/services")
 	public ResponseEntity<?> getServices(@RequestParam(value = "search", defaultValue = "") String search,@RequestParam(value="onlyMine", defaultValue="false") boolean onlyMine, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit, @RequestParam(value = "custId", defaultValue = "") Integer custId, @RequestParam(value = "repairId", defaultValue = "") Integer repairId) {
 		int clerkId = Integer.parseInt((String)SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		Page<RepairService> servicePage;
 		if(custId != null) {
-			servicePage = repairServiceService.getServicesForRole("Customer", custId, false, search, page, limit);
+			servicePage = repairServiceService.getServicesForRole("customer", custId, false, search, page, limit);
 		}else if(repairId != null) {
-			servicePage = repairServiceService.getServicesForRole("Customer", repairId, false, search, page, limit);
+			servicePage = repairServiceService.getServicesForRole("repairperson", repairId, false, search, page, limit);
 		}else {
-			servicePage = repairServiceService.getServicesForRole("Clerk", clerkId, onlyMine, search, page, limit);
+			servicePage = repairServiceService.getServicesForRole("clerk", clerkId, onlyMine, search, page, limit);
 		}
 		
 		
 		return ResponseEntity.ok(servicePage.map(RepairServiceResponseDTO::fromEntity));
 	}
 	
-	@GetMapping("/repairperson")
+	@GetMapping("/repairpersons")
 	public ResponseEntity<?> getRepairPersons(@RequestParam(value = "search", defaultValue = "") String search, @RequestParam(value = "page", defaultValue = "0") int page, @RequestParam(value="limit",defaultValue="10")int limit,@RequestParam(value="category",defaultValue="") String specialty ) {
 		Page<RepairPerson> repairPersonPage = repairPersonService.findBySearch(search, page, limit, specialty);
 		
