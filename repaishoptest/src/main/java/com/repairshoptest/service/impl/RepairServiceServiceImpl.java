@@ -61,8 +61,12 @@ public class RepairServiceServiceImpl implements RepairServiceService {
 
 	@Override
 	public Page<RepairService> getServicesForRole(UserRole role, int userId, Boolean onlyMine, String search, int page,
-			int size) {
-		Pageable pageable = PageRequest.of(page, size);
+			int limit) {
+		if(limit == -1) {
+			page = 0;
+			limit = Integer.MAX_VALUE;
+		}
+		Pageable pageable = PageRequest.of(page, limit);
 
 		switch (role) {
 		case CLERK:

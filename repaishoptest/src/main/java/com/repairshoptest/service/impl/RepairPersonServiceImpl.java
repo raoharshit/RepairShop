@@ -55,6 +55,10 @@ public class RepairPersonServiceImpl implements RepairPersonService{
 	
 	@Override
 	public Page<RepairPerson> findBySearch(String search, int page, int limit, String specialty) {
+		if(limit == -1) {
+			page = 0;
+			limit = Integer.MAX_VALUE;
+		}
 		Pageable pageable = PageRequest.of(page, limit);
 		return repairPersonRepo.findBySearchAndCategory(search, specialty, pageable);
 	}

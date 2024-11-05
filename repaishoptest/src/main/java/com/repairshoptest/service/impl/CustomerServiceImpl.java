@@ -61,6 +61,10 @@ public class CustomerServiceImpl implements CustomerService{
 	
 	@Override
 	public Page<Customer> getCustomers(String search, Boolean onlyMine, int clerkId, int page, int limit) {
+		if(limit == -1) {
+			page = 0;
+			limit = Integer.MAX_VALUE;
+		}
 		 Pageable pageable = PageRequest.of(page, limit);
 
 	        return customerRepo.findBySearchAndCreatedBy(search,onlyMine, clerkId, pageable);
