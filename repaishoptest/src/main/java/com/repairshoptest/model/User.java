@@ -63,6 +63,15 @@ public abstract class User {
 	public void setId(int id) {
 		this.id = id;
 	}
+	
+	public String getType() {
+	    if (this instanceof Customer) {
+	        return "CUSTOMER";
+	    } else if (this instanceof Clerk) {
+	        return "CLERK";
+	    }
+	    return "REPAIR";
+	}
 
 	public String getName() {
 		return name;
