@@ -8,57 +8,59 @@ import javax.validation.constraints.PositiveOrZero;
 import com.repairshoptest.model.RepairService;
 
 public class RepairServiceRequestDTO {
-	
+
 	@NotNull(message = "basecharge cannot be null")
-    @NotBlank(message = "basecharge cannot be blank")
+	@NotBlank(message = "basecharge cannot be blank")
 	@PositiveOrZero(message = "basecharge should be positive")
 	private double baseCharge;
-	
+
 	@NotNull(message = "productcode cannot be null")
-    @NotBlank(message = "productcode cannot be blank")
+	@NotBlank(message = "productcode cannot be blank")
 	private String productCode;
-	
+
 	@NotNull(message = "producttitle cannot be null")
-    @NotBlank(message = "producttitle cannot be blank")
+	@NotBlank(message = "producttitle cannot be blank")
 	private String productTitle;
-	
+
 	@NotNull(message = "productcategory cannot be null")
-    @NotBlank(message = "productcategory cannot be blank")
+	@NotBlank(message = "productcategory cannot be blank")
 	private String productCategory;
-	
-	@NotNull(message = "productcategory cannot be null")
-    @NotBlank(message = "productcategory cannot be blank")
-	private String desrciption;
-	
-	@NotNull(message = "basecharge cannot be null")
-    @NotBlank(message = "basecharge cannot be blank")
-	@Positive(message = "basecharge should be positive")
+
+	@NotNull(message = "description cannot be null")
+	@NotBlank(message = "description cannot be blank")
+	private String description;
+
+	@NotNull(message = "custid cannot be null")
+	@NotBlank(message = "custid cannot be blank")
+	@Positive(message = "custid should be positive")
 	private int custId;
-	
-	@NotNull(message = "basecharge cannot be null")
-    @NotBlank(message = "basecharge cannot be blank")
-	@Positive(message = "basecharge should be positive")
+
+	@NotNull(message = "repairid cannot be null")
+	@NotBlank(message = "repairid cannot be blank")
+	@Positive(message = "repairid should be positive")
 	private int repairId;
-	
-	public RepairServiceRequestDTO() {
-		super();
-	}
 
-	
-
-	public RepairServiceRequestDTO(double baseCharge, String productCode, String productTitle, String productCategory,
-			String desrciption, int custId, int repairId) {
+	public RepairServiceRequestDTO(
+			@NotNull(message = "basecharge cannot be null") @NotBlank(message = "basecharge cannot be blank") @PositiveOrZero(message = "basecharge should be positive") double baseCharge,
+			@NotNull(message = "productcode cannot be null") @NotBlank(message = "productcode cannot be blank") String productCode,
+			@NotNull(message = "producttitle cannot be null") @NotBlank(message = "producttitle cannot be blank") String productTitle,
+			@NotNull(message = "productcategory cannot be null") @NotBlank(message = "productcategory cannot be blank") String productCategory,
+			@NotNull(message = "description cannot be null") @NotBlank(message = "description cannot be blank") String description,
+			@NotNull(message = "custid cannot be null") @NotBlank(message = "custid cannot be blank") @Positive(message = "custid should be positive") int custId,
+			@NotNull(message = "repairid cannot be null") @NotBlank(message = "repairid cannot be blank") @Positive(message = "repairid should be positive") int repairId) {
 		super();
 		this.baseCharge = baseCharge;
 		this.productCode = productCode;
 		this.productTitle = productTitle;
 		this.productCategory = productCategory;
-		this.desrciption = desrciption;
+		this.description = description;
 		this.custId = custId;
 		this.repairId = repairId;
 	}
 
-
+	public RepairServiceRequestDTO() {
+		super();
+	}
 
 	public double getBaseCharge() {
 		return baseCharge;
@@ -68,54 +70,38 @@ public class RepairServiceRequestDTO {
 		this.baseCharge = baseCharge;
 	}
 
-	
-
 	public String getProductCode() {
 		return productCode;
 	}
-
-
 
 	public void setProductCode(String productCode) {
 		this.productCode = productCode;
 	}
 
-
-
 	public String getProductTitle() {
 		return productTitle;
 	}
-
-
 
 	public void setProductTitle(String productTitle) {
 		this.productTitle = productTitle;
 	}
 
-
-
 	public String getProductCategory() {
 		return productCategory;
 	}
-
-
 
 	public void setProductCategory(String productCategory) {
 		this.productCategory = productCategory;
 	}
 
-
-
-	public String getDesrciption() {
-		return desrciption;
+	public String getDescription() {
+		return description;
 	}
 
-
-
-	public void setDesrciption(String desrciption) {
-		this.desrciption = desrciption;
+	public void setDescription(String description) {
+		this.description = description;
 	}
-	
+
 	public int getCustId() {
 		return custId;
 	}
@@ -132,25 +118,13 @@ public class RepairServiceRequestDTO {
 		this.repairId = repairId;
 	}
 
-
-
-	@Override
-	public String toString() {
-		return "RepairServiceDTO [baseCharge=" + baseCharge + ", productCode=" + productCode + ", productTitle="
-				+ productTitle + ", productCategory=" + productCategory + ", desrciption=" + desrciption + ", custId="
-				+ custId + ", repairId=" + repairId + "]";
-	}
-
-	
-	
-	
 	public RepairService getRepairService() {
 		RepairService repairService = new RepairService();
 		repairService.setBaseCharge(this.baseCharge);
-		repairService.setDescription(this.desrciption);
-	    return repairService;
+		repairService.setDescription(this.description);
+		return repairService;
 	}
-	
+
 	public DefectiveItemDTO getDefectiveItem() {
 		DefectiveItemDTO dto = new DefectiveItemDTO();
 		dto.setTitle(this.productTitle);
