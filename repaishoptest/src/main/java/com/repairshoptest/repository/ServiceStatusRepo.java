@@ -12,7 +12,7 @@ import com.repairshoptest.model.ServiceStatus;
 @Repository
 public interface ServiceStatusRepo extends JpaRepository<ServiceStatus, Integer> {
 
-	@Query("SELECT ss FROM ServiceStatus ss WHERE ss.repairService.id = :serviceId" + "ORDER BY r.updatedAt DESC")
+	@Query("SELECT ss FROM ServiceStatus ss WHERE ss.repairService.id = :serviceId " + "ORDER BY ss.createdAt DESC")
 	List<ServiceStatus> findByRepairServiceId(@Param("serviceId") int serviceId);
 
 }

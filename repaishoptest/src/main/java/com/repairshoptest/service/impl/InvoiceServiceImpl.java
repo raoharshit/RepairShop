@@ -16,10 +16,12 @@ import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.AdditionalItemRFA;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Invoice;
+import com.repairshoptest.model.OTP;
 import com.repairshoptest.model.RepairService;
 import com.repairshoptest.repository.InvoiceRepo;
 import com.repairshoptest.service.ClerkService;
 import com.repairshoptest.service.InvoiceService;
+import com.repairshoptest.service.OTPService;
 import com.repairshoptest.service.RFAService;
 import com.repairshoptest.service.RepairServiceService;
 import com.repairshoptest.utils.OTPUtil;
@@ -39,6 +41,9 @@ public class InvoiceServiceImpl implements InvoiceService{
 	@Autowired
 	private ClerkService clerkService;
 	
+	@Autowired
+	private OTPService otpService;
+	
 	
 	@Override
 	public InvoiceGenerateResponse generateOTP(int clerkId,int serviceId) {
@@ -50,23 +55,27 @@ public class InvoiceServiceImpl implements InvoiceService{
 		if(repairService == null) {
 			throw new ResourceNotFoundException("Service not found");
 		}
-		Invoice invoice = invoiceRepo.findByService(serviceId);
-		String otp = OTPUtil.generateOTP();
-		if(invoice != null) {
-			invoice.setOtp(otp);
-			
+		Invoice invoice = invoiceRepo.findByRepairService(serviceId);
+		OTP otp = OTPUtil.generateOTP();
+		InvoiceGenerateResponse response = new InvoiceGenerateResponse();
+		int invoiceId;
+		if(invoice == null) {
+			invoiceId = generateInvoice(repairService);
+			//send OTP code
+			otpService.addForInvoice(invoiceId, otp);
+			response.setId(invoiceId);
+		}else {
+			//send OTP code
+			otpService.addForInvoice(invoice.getId(), otp);
+			response.setId(invoice.getId());
 		}
 		
-		int invoiceId = generateInvoice(repairService,otp);
-		//send OTP code
-		InvoiceGenerateResponse response = new InvoiceGenerateResponse();
-		response.setId(invoiceId);
-		response.setMessage("OTP sent to customer's mobile");
+		response.setMessage("OTP sent to customer's mobile number");
 		
 		return response;
 	}
 	
-	public int generateInvoice(RepairService service, String otp) {
+	public int generateInvoice(RepairService service) {
 		List<AdditionalItemRFA> list = rfaService.findByRepairServiceId(service.getId());
 		double totalAmount = service.getBaseCharge();
 		
@@ -79,7 +88,6 @@ public class InvoiceServiceImpl implements InvoiceService{
 		Invoice invoice = new Invoice();
 		invoice.setRepairService(service);
 		invoice.setTotalAmount(totalAmount);
-		invoice.setOtp(otp);
 		
 		Invoice save = invoiceRepo.save(invoice);
 		
@@ -97,18 +105,18 @@ public class InvoiceServiceImpl implements InvoiceService{
 			throw new RuntimeException("Otp should not be empty");
 		}
 		Clerk clerk = clerkService.findById(clerkId);
-		Optional<Invoice> otpInvoice = invoiceRepo.findById(invoiceId);
+		Optional<Invoice> optInvoice = invoiceRepo.findById(invoiceId);
 		if(clerk == null) {
 			throw new ResourceNotFoundException("Clerk is not found");
 		}
-		if(otpInvoice.isEmpty()) {
+		if(optInvoice.isEmpty()) {
 			throw new ResourceNotFoundException("Invoice is not found");
 		}
 		
 
-		Invoice invoice = otpInvoice.get();
-		//check otp is not expired
-		if(invoice.getOtp().equals(otp)){
+		Invoice invoice = optInvoice.get();
+		
+		if(otpService.validateForInvoice(invoiceId, otp)){
 			invoice.setDeliveredAt(LocalDateTime.now());
 			invoice.setDeliveredBy(clerk);
 			invoice.setIsDelivered(true);
