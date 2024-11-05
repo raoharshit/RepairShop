@@ -44,6 +44,9 @@ public class InvoiceServiceImpl implements InvoiceService{
 	@Autowired
 	private OTPService otpService;
 	
+	@Autowired
+	private SmsService smsService;
+	
 	
 	@Override
 	public InvoiceGenerateResponse generateOTP(int clerkId,int serviceId) {
@@ -65,7 +68,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 			otpService.addForInvoice(invoiceId, otp);
 			response.setId(invoiceId);
 		}else {
-			//send OTP code
+			smsService.sendOtp(repairService.getCustomer().getPhone(), otp.getOtp());
 			otpService.addForInvoice(invoice.getId(), otp);
 			response.setId(invoice.getId());
 		}
