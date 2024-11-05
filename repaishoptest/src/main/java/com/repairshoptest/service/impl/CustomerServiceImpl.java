@@ -10,12 +10,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.repairshop.exception.DuplicateUserException;
-import com.repairshop.exception.InvalidCredentialsException;
-import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.CustomerRequestDTO;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
+import com.repairshoptest.exception.DuplicateUserException;
+import com.repairshoptest.exception.InvalidCredentialsException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
 import com.repairshoptest.repository.CustomerRepo;
@@ -38,7 +38,7 @@ public class CustomerServiceImpl implements CustomerService{
 
 
 	@Override
-	public Customer findById(int custId) throws ResourceNotFoundException{
+	public Customer findById(int custId){
 		Optional<Customer> optCustomer = customerRepo.findById(custId);
 		if(optCustomer.isEmpty()) {
 			throw new ResourceNotFoundException("Customer not found");
@@ -46,53 +46,18 @@ public class CustomerServiceImpl implements CustomerService{
 		return optCustomer.get();
 	}
 	
-//	@Override
-//	public Customer findByEmail(String email) {
-//		Customer customer = customerRepo.findByEmail(email);
-//		if(customer == null) {
-//			//throw new Exception("Customer not found");
-//			return null;
-//		}
-//		return customer;
-//	}
 	
 	@Override
-	public Customer authenticateCustomer(String userName, String password) throws ResourceNotFoundException{
+	public Customer authenticateCustomer(String userName, String password){
 		Customer customer = customerRepo.findByEmail(userName);
 		if(customer == null) {
-			 throw new ResourceNotFoundException("User not found");
+			 throw new ResourceNotFoundException("Incorrect username or password");
 		}
 		if(passwordEncoder.matches(password, customer.getHashedPassword())) {
 			return customer;
 		}
-		//throw new Exception("Invalid User");
-		return null;
+		throw new InvalidCredentialsException("Incorrect username or password");
 	}
-	
-	
-
-//	@Override
-//	public List<Customer> findAll() {
-//		// TODO Auto-generated method stub
-//		List<Customer> list = customerRepo.findAll();
-//		return list;
-//	}
-	
-	
-//	@Override
-//	public List<Customer> findByCreatedBy(User createdBy) {
-//		List<Customer> list = customerRepo.findByCreatedBy(createdBy);
-//		return list;
-//	}
-	
-//
-//	@Override
-//	public List<Customer> findByPattern(String pattern) {
-//		// TODO Auto-generated method stub
-//		List<Customer> list = customerRepo.findByPattern(pattern);
-//		return list;
-//	}
-
 	
 	@Override
 	public Page<Customer> getCustomers(String search, Boolean onlyMine, int clerkId, int page, int limit) {
@@ -103,7 +68,7 @@ public class CustomerServiceImpl implements CustomerService{
 
 	@Override
 	@Transactional
-	public Customer add(int clerkId,CustomerRequestDTO customerRequestDTO) throws ResourceNotFoundException,DuplicateUserException{
+	public Customer add(int clerkId,CustomerRequestDTO customerRequestDTO){
 		Clerk clerk = clerkService.findById(clerkId);
 		if(customerRepo.findByEmail(customerRequestDTO.getEmail()) != null ) {
 			 throw new DuplicateUserException("Customer with same email is already present");
@@ -123,7 +88,7 @@ public class CustomerServiceImpl implements CustomerService{
 
 	@Override
 	@Transactional
-	public Customer update(int custId, CustomerRequestDTO customerRequestDTO) throws ResourceNotFoundException{
+	public Customer update(int custId, CustomerRequestDTO customerRequestDTO){
 		
 		Optional<Customer> optCustomer = customerRepo.findById(custId);
 		if(optCustomer.isEmpty()) {
@@ -150,10 +115,7 @@ public class CustomerServiceImpl implements CustomerService{
 	
 	@Override
 	@Transactional
-	public PasswordChangeResponse updatePassword(int custId,PasswordChangeRequest passwordChangeRequest) throws ResourceNotFoundException,InvalidCredentialsException{
-		// TODO Auto-generated method stub
-
-
+	public PasswordChangeResponse updatePassword(int custId,PasswordChangeRequest passwordChangeRequest){
 		Optional<Customer> optCustomer = customerRepo.findById(custId);
 		if(optCustomer.isEmpty()) {
 			throw new ResourceNotFoundException("Customer not found");

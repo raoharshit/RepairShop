@@ -25,7 +25,8 @@ public interface RepairPersonRepo extends JpaRepository<RepairPerson, Integer> {
 		       "LOWER(rp.name) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
 		       "LOWER(rp.email) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
 		       "LOWER(rp.phone) LIKE LOWER(CONCAT('%', :search, '%'))) " +
-		       "AND (:specialty = '' OR rp.specialty = :specialty)")
+		       "AND (:specialty = '' OR rp.specialty = :specialty)"+
+		       "ORDER BY rp.updatedAt DESC")
 		Page<RepairPerson> findBySearchAndCategory(
 		        @Param("search") String search, 
 		        @Param("specialty") String specialty, 

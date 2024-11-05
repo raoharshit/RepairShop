@@ -34,17 +34,18 @@ public class RepairService {
 	private LocalDateTime updatedAt;
 	@ManyToOne
 	private Clerk createdBy;
-	
+
 	@ManyToOne
 	private RepairPerson assignedTo;
-	
+
 	private boolean isRepaired = false;
 
 	public RepairService() {
 		super();
 	}
 
-	public RepairService(int id, String code, double baseCharge, String description, DefectiveItem defectiveItem, Customer customer, Clerk createdBy) {
+	public RepairService(int id, String code, double baseCharge, String description, DefectiveItem defectiveItem,
+			Customer customer, Clerk createdBy) {
 		super();
 		this.id = id;
 		this.code = code;
@@ -87,8 +88,6 @@ public class RepairService {
 		this.latestStatus = latestStatus;
 	}
 
-	
-	
 	public String getDescription() {
 		return description;
 	}
@@ -144,8 +143,6 @@ public class RepairService {
 	public void setAssignedTo(RepairPerson assignedTo) {
 		this.assignedTo = assignedTo;
 	}
-	
-	
 
 	public boolean isRepaired() {
 		return isRepaired;
@@ -162,7 +159,5 @@ public class RepairService {
 				+ customer + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", createdBy=" + createdBy
 				+ ", assignedTo=" + assignedTo + ", isRepaired=" + isRepaired + "]";
 	}
-	
-	
 
 }

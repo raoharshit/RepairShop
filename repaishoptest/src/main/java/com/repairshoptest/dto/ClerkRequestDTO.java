@@ -1,13 +1,29 @@
 package com.repairshoptest.dto;
 
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
 
 public class ClerkRequestDTO {
+	
+	@NotNull(message = "name cannot be null")
+    @NotBlank(message = "name cannot be blank")
 	private String name;
+	
+	@NotNull(message = "email cannot be null")
+    @NotBlank(message = "email cannot be blank")
 	private String email;
+	
+	@NotNull(message = "phone cannot be null")
+    @NotBlank(message = "phone cannot be blank")
 	private String phone;
+	
+	@NotNull(message = "address cannot be null")
+    @NotBlank(message = "address cannot be blank")
 	private String address;
+	
 	private String password;
 	
 	

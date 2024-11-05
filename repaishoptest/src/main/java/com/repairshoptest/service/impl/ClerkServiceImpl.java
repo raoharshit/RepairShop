@@ -7,12 +7,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.repairshop.exception.DuplicateUserException;
-import com.repairshop.exception.InvalidCredentialsException;
-import com.repairshop.exception.ResourceNotFoundException;
 import com.repairshoptest.dto.ClerkRequestDTO;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
+import com.repairshoptest.exception.DuplicateUserException;
+import com.repairshoptest.exception.InvalidCredentialsException;
+import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.repository.ClerkRepo;
 import com.repairshoptest.service.ClerkService;
@@ -27,27 +27,17 @@ public class ClerkServiceImpl implements ClerkService{
 	private PasswordEncoder passwordEncoder;
 	
 	@Override
-	public Clerk findById(int clerkId) throws ResourceNotFoundException{
+	public Clerk findById(int clerkId){
 		Optional<Clerk> optClerk = clerkRepo.findById(clerkId);
 		if(optClerk.isEmpty()) {
 			throw new ResourceNotFoundException("Clerk not found");
-//			return null;
 		}
 		return optClerk.get();
 	}
 	
-//	@Override
-//	public Clerk findByEmail(String email) {
-//		Clerk clerk = clerkRepo.findByEmail(email);
-//		if(clerk == null) {
-//			//throw new Exception("Clerk not found");
-//			return null;
-//		}
-//		return clerk;
-//	}
 	
 	@Override
-	public Clerk authenticateClerk(String userName, String password) throws InvalidCredentialsException{
+	public Clerk authenticateClerk(String userName, String password){
 		System.out.println(userName + " " + password);
 		Clerk clerk = clerkRepo.findByEmail(userName);
 		if(clerk == null) {
@@ -61,7 +51,7 @@ public class ClerkServiceImpl implements ClerkService{
 
 	@Override
 	@Transactional
-	public Clerk add(ClerkRequestDTO clerkRequestDTO) throws DuplicateUserException{
+	public Clerk add(ClerkRequestDTO clerkRequestDTO){
 		if(clerkRepo.findByEmail(clerkRequestDTO.getEmail()) != null ) {
 			 throw new DuplicateUserException("Clerk with same email is already present");
 		}
@@ -74,7 +64,7 @@ public class ClerkServiceImpl implements ClerkService{
 
 	@Override
 	@Transactional
-	public Clerk update(int clerkId, ClerkRequestDTO clerkRequestDTO) throws ResourceNotFoundException{
+	public Clerk update(int clerkId, ClerkRequestDTO clerkRequestDTO){
 		Optional<Clerk> optClerk = clerkRepo.findById(clerkId);
 		if(optClerk.isEmpty()) {
 			throw new ResourceNotFoundException("Clerk not found");
@@ -91,9 +81,7 @@ public class ClerkServiceImpl implements ClerkService{
 
 	@Override
 	@Transactional
-	public PasswordChangeResponse updatePassword(int clerkId, PasswordChangeRequest passwordChangeRequest) throws ResourceNotFoundException,InvalidCredentialsException{
-		//Hashing algorithm code
-
+	public PasswordChangeResponse updatePassword(int clerkId, PasswordChangeRequest passwordChangeRequest){
 		Optional<Clerk> optClerk = clerkRepo.findById(clerkId);
 
 		if(optClerk.isEmpty()) {
@@ -110,17 +98,6 @@ public class ClerkServiceImpl implements ClerkService{
 		 throw new InvalidCredentialsException("Old password is incorrect");
 	}
 
-//	@Override
-//	public boolean remove(int clerkId) {
-//		// TODO Auto-generated method stub
-//		Optional<Clerk> optClerk = clerkRepo.findById(clerkId);
-//		if(optClerk.isEmpty()) {
-//			//throws new Exception("Repairperson with " + id + " is not present");
-//			return false;
-//		}
-//		clerkRepo.delete(optClerk.get());
-//		return true;
-//	}
 
 	
 

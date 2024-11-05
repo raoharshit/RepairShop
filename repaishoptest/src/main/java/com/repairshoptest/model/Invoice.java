@@ -25,9 +25,10 @@ public class Invoice {
 //	@OneToMany // Can be modified to ManyToMany later
 //	private List<RequestForApproval> approvedRequests;
 	private Double totalAmount;
-	private int otp; // 4 digits
+	private String otp; // 4 digits
 	@Column(columnDefinition = "boolean default false")
 	private Boolean isDelivered;
+	
 	private LocalDateTime deliveredAt;
 	@ManyToOne
 	private Clerk deliveredBy;
@@ -37,7 +38,7 @@ public class Invoice {
 	@UpdateTimestamp
 	private LocalDateTime updatedAt;
 
-	public Invoice(int id, RepairService repairService, Double totalAmount, int otp) {
+	public Invoice(int id, RepairService repairService, Double totalAmount, String otp) {
 		super();
 		this.id = id;
 		this.repairService = repairService;
@@ -72,11 +73,11 @@ public class Invoice {
 		this.totalAmount = totalAmount;
 	}
 
-	public int getOtp() {
+	public String getOtp() {
 		return otp;
 	}
 
-	public void setOtp(int otp) {
+	public void setOtp(String otp) {
 		this.otp = otp;
 	}
 
