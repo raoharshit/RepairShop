@@ -24,7 +24,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
         http.cors(cors -> cors.configurationSource(customCorsConfiguration)).csrf(csrf -> csrf.disable()).authorizeHttpRequests(requests -> requests
-                .antMatchers("/login", "/register").permitAll() // Allow public endpoints without authentication
+                .antMatchers("/login", "/register","/forgotpassword","/forgotpassword/verifyotp","/forgotpassword/resendotp").permitAll() // Allow public endpoints without authentication
                 .anyRequest().authenticated()).addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .logout(logout -> logout
                         .logoutUrl("/logout")  // URL to trigger logout

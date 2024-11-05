@@ -2,6 +2,8 @@ package com.repairshoptest.service.impl;
 
 import java.util.Optional;
 
+import javax.transaction.Transactional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +26,26 @@ public class UserServiceImpl implements UserService{
 		}
 		
 		return optUser.get();
+	}
+
+	@Override
+	public User findByEmail(String email) {
+		User user = userRepo.findByEmail(email);
+		if(user == null) {
+			throw new ResourceNotFoundException("User not found");
+		}
+		
+		return user;
+	}
+	
+	@Override
+	@Transactional
+	public User add(User user) {
+		User save = userRepo.save(user);
+		if(save == null) {
+			throw new ResourceNotFoundException("User not found");
+		}
+		return user;
 	}
 
 }

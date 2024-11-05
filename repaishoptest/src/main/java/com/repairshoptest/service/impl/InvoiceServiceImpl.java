@@ -47,6 +47,9 @@ public class InvoiceServiceImpl implements InvoiceService{
 	@Autowired
 	private SmsService smsService;
 	
+	@Autowired
+	private OTPUtil otpUtil;
+	
 	
 	@Override
 	public InvoiceGenerateResponse generateOTP(int clerkId,int serviceId) {
@@ -59,7 +62,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 			throw new ResourceNotFoundException("Service not found");
 		}
 		Invoice invoice = invoiceRepo.findByRepairService(serviceId);
-		OTP otp = OTPUtil.generateOTP();
+		OTP otp = otpUtil.generateOTP();
 		InvoiceGenerateResponse response = new InvoiceGenerateResponse();
 		int invoiceId;
 		if(invoice == null) {
