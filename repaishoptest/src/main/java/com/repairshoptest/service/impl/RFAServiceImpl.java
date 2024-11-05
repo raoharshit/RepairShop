@@ -42,6 +42,10 @@ public class RFAServiceImpl implements RFAService{
 
 	@Override
 	public Page<AdditionalItemRFA> findRFAForRole(String role, int userId, String search, int page, int limit) {
+		if(limit == -1) {
+			page = 0;
+			limit = Integer.MAX_VALUE;
+		}
 		Pageable pageable = PageRequest.of(page, limit);
 
 	    switch (role) {

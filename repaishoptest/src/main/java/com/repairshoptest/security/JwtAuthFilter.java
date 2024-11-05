@@ -36,13 +36,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         
     	String requestPath = request.getRequestURI();
-        if (requestPath.equals("/login") || requestPath.equals("/register")) {
+        if (requestPath.equals("/login") || requestPath.equals("/register") || requestPath.equals("/forgotpassword") || requestPath.equals("/forgotpassword/verifyotp") || requestPath.equals("/forgotpassword/resendotp")) {
             filterChain.doFilter(request, response);
             return;
         }
     	String jwt = getJwtFromCookie(request);
+    	System.out.println(jwt);
         if (jwt != null && !jwtUtil.isTokenValid(jwt)) {
-        	
+        	System.out.println("hello");
             int userId = jwtUtil.extractUserId(jwt);
             User user;
             try {
