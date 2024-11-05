@@ -20,6 +20,8 @@ import com.repairshoptest.dto.ClerkRequestDTO;
 import com.repairshoptest.dto.ClerkResponseDTO;
 import com.repairshoptest.dto.CustomerRequestDTO;
 import com.repairshoptest.dto.CustomerResponseDTO;
+import com.repairshoptest.dto.InvoiceGenerateResponse;
+import com.repairshoptest.dto.InvoiceResponse;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairPersonResponseDTO;
@@ -33,6 +35,7 @@ import com.repairshoptest.model.RepairService;
 import com.repairshoptest.model.ServiceStatus;
 import com.repairshoptest.service.ClerkService;
 import com.repairshoptest.service.CustomerService;
+import com.repairshoptest.service.InvoiceService;
 import com.repairshoptest.service.RFAService;
 import com.repairshoptest.service.RepairPersonService;
 import com.repairshoptest.service.RepairServiceService;
@@ -59,6 +62,9 @@ public class ClerkController {
 
 	@Autowired
 	private ServiceStatusService serviceStatusService;
+	
+	@Autowired
+	private InvoiceService invoiceService;
 
 	@GetMapping("/profile")
 	public ResponseEntity<?> getProfile() {
@@ -178,6 +184,21 @@ public class ClerkController {
 		RepairService repairService = repairServiceService.add(clerkId, dto);
 		return ResponseEntity.ok(RepairServiceResponseDTO.fromEntity(repairService));
 
+	}
+	
+	@PostMapping("/service/{id}")
+	public ResponseEntity<?> generateOTPForInvoice(@PathVariable("id") int id) {
+		int clerkId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		InvoiceGenerateResponse invoiceGenerateResponse = invoiceService.generateOTP(clerkId,id);
+		return ResponseEntity.ok(invoiceGenerateResponse);
+
+	}
+	
+	@PostMapping("/invoice/{id}")
+	public ResponseEntity<?> generateInvoice(@PathVariable("id") int id, @RequestParam("otp") String otp){
+		int clerkId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
+		InvoiceResponse invoiceResponse = invoiceService.validateOTP(clerkId, id, otp);
+		return ResponseEntity.ok(invoiceResponse);
 	}
 
 }
