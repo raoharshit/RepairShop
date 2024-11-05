@@ -23,6 +23,7 @@ import com.repairshoptest.dto.CustomerResponseDTO;
 import com.repairshoptest.dto.PasswordChangeRequest;
 import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairServiceResponseDTO;
+import com.repairshoptest.enums.UserRole;
 import com.repairshoptest.exception.InvalidCredentialsException;
 import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.AdditionalItemRFA;
@@ -83,7 +84,7 @@ public class CustomerController {
 			@RequestParam(value = "page", defaultValue = "0") int page,
 			@RequestParam(value = "limit", defaultValue = "10") int limit) {
 		int custId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
-		Page<RepairService> servicePage = repairServiceService.getServicesForRole("customer", custId, false, search,
+		Page<RepairService> servicePage = repairServiceService.getServicesForRole(UserRole.CUSTOMER, custId, false, search,
 				page, limit);
 
 		return ResponseEntity.ok(servicePage.map(RepairServiceResponseDTO::fromEntity));
