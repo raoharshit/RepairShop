@@ -2,7 +2,6 @@ package com.repairshoptest.service;
 
 import java.util.List;
 
-import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.NewItem;
 
 public interface NewItemService {
@@ -11,4 +10,5 @@ public interface NewItemService {
 	
 	List<NewItem> findByCategory(String category);
 	
+	List<NewItem> findAll();
 }
