@@ -39,4 +39,15 @@ public interface RepairServiceRepo extends JpaRepository<RepairService, Integer>
 	Page<RepairService> findServicesForClerk(@Param("search") String search, @Param("onlyMine") Boolean onlyMine,
 			@Param("clerkId") int clerkId, Pageable pageable);
 
+	@Query("SELECT COUNT(s) FROM RepairService s WHERE " + "YEAR(s.createdAt) = :year AND MONTH(s.createdAt) = :month")
+	Long countByCreatedAtMonthAndYear(@Param("year") int year, @Param("month") int month);
+
+	@Query("SELECT COUNT(s) FROM RepairService s WHERE " + "s.latestStatus = 'Closed' AND "
+			+ "YEAR(s.updatedAt) = :year AND MONTH(s.updatedAt) = :month")
+	Long countClosedServicesByUpdatedAtMonthAndYear(@Param("year") int year, @Param("month") int month);
+
+	@Query("SELECT SUM(s.baseCharge) FROM RepairService s WHERE " + "s.latestStatus = 'Closed' AND "
+			+ "YEAR(s.updatedAt) = :year AND MONTH(s.updatedAt) = :month")
+	Double sumServiceChargesByClosedStatusAndDate(@Param("year") int year, @Param("month") int month);
+
 }

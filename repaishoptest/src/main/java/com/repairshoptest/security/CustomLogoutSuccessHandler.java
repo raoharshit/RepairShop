@@ -8,7 +8,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
     @Override
     public void onLogoutSuccess(HttpServletRequest request, HttpServletResponse response, 
                                 org.springframework.security.core.Authentication authentication) throws IOException {
-        response.setStatus(HttpServletResponse.SC_OK);  // Set HTTP status code 200
+        response.setStatus(HttpServletResponse.SC_OK); 
         response.setContentType("application/json");
         response.getWriter().write("{\"message\": \"Logout successful\"}");
         response.getWriter().flush();

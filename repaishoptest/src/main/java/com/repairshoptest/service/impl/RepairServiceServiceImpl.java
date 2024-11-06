@@ -11,7 +11,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.repairshoptest.dto.RepairServiceRequestDTO;
 import com.repairshoptest.enums.UserRole;
-import com.repairshoptest.exception.InvalidCredentialsException;
 import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.Clerk;
 import com.repairshoptest.model.Customer;
@@ -51,7 +50,6 @@ public class RepairServiceServiceImpl implements RepairServiceService {
 
 	@Override
 	public RepairService findById(int id) {
-		// TODO Auto-generated method stub
 		Optional<RepairService> optRS = repairServiceRepo.findById(id);
 		if (optRS.isEmpty()) {
 			throw new ResourceNotFoundException("Service not found");
@@ -125,6 +123,21 @@ public class RepairServiceServiceImpl implements RepairServiceService {
 			return true;
 		}
 		throw new RuntimeException("Could not create service status due to some error");
+	}
+
+	@Override
+	public Long countServicesCreated(int year, int month) {
+		return repairServiceRepo.countByCreatedAtMonthAndYear(year, month);
+	}
+
+	@Override
+	public Long countClosedServices(int year, int month) {
+		return repairServiceRepo.countClosedServicesByUpdatedAtMonthAndYear(year, month);
+	}
+
+	@Override
+	public Double totalServiceCharges(int year, int month) {
+		return repairServiceRepo.sumServiceChargesByClosedStatusAndDate(year, month);
 	}
 
 }

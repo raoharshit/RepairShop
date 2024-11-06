@@ -32,4 +32,7 @@ public interface CustomerRepo extends JpaRepository<Customer, Integer>{
 	
 	Customer findByPhone(String phone);
 	
+	@Query("SELECT COUNT(c) FROM Customer c WHERE YEAR(c.createdAt) = :year AND MONTH(c.createdAt) = :month")
+	Long countCustomersByMonthAndYear(@Param("year") int year, @Param("month") int month);
+	
 }

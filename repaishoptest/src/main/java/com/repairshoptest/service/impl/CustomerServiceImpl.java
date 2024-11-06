@@ -137,5 +137,11 @@ public class CustomerServiceImpl implements CustomerService{
 	  
 	}
 
+
+	@Override
+	public Long getCustomersCount(int year, int month) {
+		return customerRepo.countCustomersByMonthAndYear(year, month);
+	}
+
 	
 }

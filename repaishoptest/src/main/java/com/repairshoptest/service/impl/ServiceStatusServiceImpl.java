@@ -16,7 +16,7 @@ import com.repairshoptest.service.ServiceStatusService;
 public class ServiceStatusServiceImpl implements ServiceStatusService{
 	
 	@Autowired
-	ServiceStatusRepo serviceStatusRepo;
+	private ServiceStatusRepo serviceStatusRepo;
 	
 	@Override
 	public List<ServiceStatus> findByRepairServiceId(int repairServiceId) {
