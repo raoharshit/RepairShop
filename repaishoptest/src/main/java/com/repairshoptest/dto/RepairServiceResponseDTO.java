@@ -13,12 +13,24 @@ public class RepairServiceResponseDTO {
 	private String description;
 	private String custName;
 	private String repairName;
+	private String clerkName;
+	
+	public String getClerkName() {
+		return clerkName;
+	}
+
+	public void setClerkName(String clerkName) {
+		this.clerkName = clerkName;
+	}
+
 	public RepairServiceResponseDTO() {
 		super();
 	}
 
-	public RepairServiceResponseDTO(int id, String code,double baseCharge,DefectiveItem defItem, String status,String description, String custName,
-			String repairName) {
+	
+
+	public RepairServiceResponseDTO(int id, String code, double baseCharge, DefectiveItem defItem, String status,
+			String description, String custName, String repairName, String clerkName) {
 		super();
 		this.id = id;
 		this.code = code;
@@ -28,6 +40,7 @@ public class RepairServiceResponseDTO {
 		this.description = description;
 		this.custName = custName;
 		this.repairName = repairName;
+		this.clerkName = clerkName;
 	}
 
 	public int getId() {
@@ -117,6 +130,8 @@ public class RepairServiceResponseDTO {
 		repairServiceResponseDTO.setStatus(repairService.getLatestStatus());
 		repairServiceResponseDTO.setCustName(repairService.getCustomer().getName());
 		repairServiceResponseDTO.setRepairName(repairService.getAssignedTo().getName());
+		repairServiceResponseDTO.setClerkName(repairService.getCreatedBy().getName());
+		
 		return repairServiceResponseDTO;
 	}
 
