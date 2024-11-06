@@ -119,4 +119,20 @@ public class RFAServiceImpl implements RFAService{
 			
 	}
 
+	@Override
+	public Double findAdditionalCharges(int year, int month) {
+		return rfaRepo.findTotalServiceChargeAndItemPriceForMonthAndYear(month, year);
+	}
+
+	@Override
+	public NewItem findMostRequestedItem(int year, int month) {
+		List<Object[]> mostRequestedItems = rfaRepo.findMostRequestedItem(year, month);
+		if (!mostRequestedItems.isEmpty()) {
+		    Object[] mostRequestedItem = mostRequestedItems.get(0);
+		    NewItem mostRequestedNewItem = (NewItem) mostRequestedItem[0];
+		    return mostRequestedNewItem;
+		}
+		return null;
+	}
+
 }

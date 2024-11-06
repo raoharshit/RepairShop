@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import com.repairshoptest.dto.AdditionalItemRFARequestDTO;
-import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.AdditionalItemRFA;
+import com.repairshoptest.model.NewItem;
 
 public interface RFAService {
 	
@@ -19,5 +19,9 @@ public interface RFAService {
 	AdditionalItemRFA createRFA(int serviceId, AdditionalItemRFARequestDTO dto);
 	
 	boolean updateRFA(int id, String response);
+	
+	Double findAdditionalCharges(int year, int month);
+	
+	NewItem findMostRequestedItem(int year, int month);
 
 }

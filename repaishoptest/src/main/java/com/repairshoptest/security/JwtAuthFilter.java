@@ -29,7 +29,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     @Autowired
     private UserService userService;
     
-    @Autowired JwtUtil jwtUtil;
+    @Autowired 
+    private JwtUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -41,9 +42,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             return;
         }
     	String jwt = getJwtFromCookie(request);
-    	System.out.println(jwt);
         if (jwt != null && !jwtUtil.isTokenValid(jwt)) {
-        	System.out.println("hello");
             int userId = jwtUtil.extractUserId(jwt);
             User user;
             try {

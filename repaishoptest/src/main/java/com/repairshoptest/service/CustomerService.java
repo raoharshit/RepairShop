@@ -21,4 +21,6 @@ public interface CustomerService {
 	
 	PasswordChangeResponse updatePassword(int custId,PasswordChangeRequest passwordChangeRequest);
 	
+	Long getCustomersCount(int year, int month);
+	
 }

@@ -14,7 +14,7 @@ import com.repairshoptest.service.UserService;
 public class InitController {
 
 	@Autowired
-	UserService userService;
+	private UserService userService;
 
 	@GetMapping("/init")
 	public ResponseEntity<?> init() {

@@ -19,10 +19,10 @@ import com.repairshoptest.utils.JwtUtil;
 @RestController
 public class ForgotPasswordController {
 	@Autowired
-	ForgotPasswordService service;
+	private ForgotPasswordService service;
 	
 	@Autowired
-	JwtUtil jwtUtil;
+	private JwtUtil jwtUtil;
 	
 	@PostMapping("/forgotpassword")
 	public ResponseEntity<?> generateOTP(@RequestParam("email") String email){

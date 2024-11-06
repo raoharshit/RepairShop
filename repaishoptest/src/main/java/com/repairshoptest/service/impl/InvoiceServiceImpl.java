@@ -67,7 +67,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 		int invoiceId;
 		if(invoice == null) {
 			invoiceId = generateInvoice(repairService);
-			//send OTP code
+			smsService.sendOtp(repairService.getCustomer().getPhone(), otp.getOtp());
 			otpService.addForInvoice(invoiceId, otp);
 			response.setId(invoiceId);
 		}else {
@@ -87,7 +87,9 @@ public class InvoiceServiceImpl implements InvoiceService{
 		
 		if(list != null && !list.isEmpty()) {
 			for(AdditionalItemRFA rfa : list) {
-				totalAmount += rfa.getServiceCharge() + rfa.getNewItem().getPrice();
+				if(rfa.getApprovalStatus() == "Approved") {
+					totalAmount += rfa.getServiceCharge() + rfa.getNewItem().getPrice();
+				}
 			}
 		}
 		
@@ -135,7 +137,9 @@ public class InvoiceServiceImpl implements InvoiceService{
 			List<AdditionalItemRFA> list = rfaService.findByRepairServiceId(invoice.getRepairService().getId());
 			if(list != null && !list.isEmpty()) {
 				for(AdditionalItemRFA rfa: list) {
-					rfaList.add(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+					if(rfa.getApprovalStatus() == "Approved") {
+						rfaList.add(AdditionalItemRFAResponseDTO.fromEntity(rfa));
+					}
 				}
 			}
 			

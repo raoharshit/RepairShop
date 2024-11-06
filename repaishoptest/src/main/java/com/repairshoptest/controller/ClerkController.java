@@ -2,6 +2,10 @@ package com.repairshoptest.controller;
 
 import java.util.List;
 
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.PositiveOrZero;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +31,7 @@ import com.repairshoptest.dto.PasswordChangeResponse;
 import com.repairshoptest.dto.RepairPersonResponseDTO;
 import com.repairshoptest.dto.RepairServiceRequestDTO;
 import com.repairshoptest.dto.RepairServiceResponseDTO;
+import com.repairshoptest.dto.ReportResponse;
 import com.repairshoptest.enums.UserRole;
 import com.repairshoptest.model.AdditionalItemRFA;
 import com.repairshoptest.model.Clerk;
@@ -40,6 +45,7 @@ import com.repairshoptest.service.InvoiceService;
 import com.repairshoptest.service.RFAService;
 import com.repairshoptest.service.RepairPersonService;
 import com.repairshoptest.service.RepairServiceService;
+import com.repairshoptest.service.ReportService;
 import com.repairshoptest.service.ServiceStatusService;
 
 @RestController
@@ -66,6 +72,9 @@ public class ClerkController {
 	
 	@Autowired
 	private InvoiceService invoiceService;
+	
+	@Autowired
+	private ReportService reportService;
 
 	@GetMapping("/profile")
 	public ResponseEntity<?> getProfile() {
@@ -200,6 +209,12 @@ public class ClerkController {
 		int clerkId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		InvoiceResponse invoiceResponse = invoiceService.validateOTP(clerkId, id, otp);
 		return ResponseEntity.ok(invoiceResponse);
+	}
+	
+	@GetMapping("/report")
+	public ResponseEntity<?> getReport(@Valid @NotNull(message = "year can not be null") @PositiveOrZero(message = "year can not be negative")@RequestParam("year") int year,@NotNull(message = "month can not be null") @PositiveOrZero(message = "month can not be negative") @RequestParam("month") int month) {
+		ReportResponse monthlyReport = reportService.getMonthlyReport(year, month);
+		return ResponseEntity.ok(monthlyReport);
 	}
 
 }

@@ -16,7 +16,7 @@ import com.repairshoptest.service.UserService;
 public class UserServiceImpl implements UserService{
 
 	@Autowired
-	UserRepo userRepo;
+	private UserRepo userRepo;
 	
 	@Override
 	public User findById(int userId){

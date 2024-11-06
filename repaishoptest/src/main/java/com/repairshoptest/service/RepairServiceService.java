@@ -17,5 +17,11 @@ public interface RepairServiceService {
 	
 	boolean closeService(int id);
 	
+	Long countServicesCreated(int year, int month);
+	
+	Long countClosedServices(int year, int month);
+	
+	Double totalServiceCharges(int year, int month);
+	
 	
 }
