@@ -25,10 +25,11 @@ public class Invoice {
 //	@OneToMany // Can be modified to ManyToMany later
 //	private List<RequestForApproval> approvedRequests;
 	private Double totalAmount;
-	private String otp; // 4 digits
+	@Column(columnDefinition = "varchar(1) default '0'")
+	private String otp;
 	@Column(columnDefinition = "boolean default false")
 	private Boolean isDelivered;
-	
+
 	private LocalDateTime deliveredAt;
 	@ManyToOne
 	private Clerk deliveredBy;
@@ -43,6 +44,14 @@ public class Invoice {
 		this.id = id;
 		this.repairService = repairService;
 		this.totalAmount = totalAmount;
+		this.otp = otp;
+	}
+
+	public String getOtp() {
+		return otp;
+	}
+
+	public void setOtp(String otp) {
 		this.otp = otp;
 	}
 
@@ -71,14 +80,6 @@ public class Invoice {
 
 	public void setTotalAmount(Double totalAmount) {
 		this.totalAmount = totalAmount;
-	}
-
-	public String getOtp() {
-		return otp;
-	}
-
-	public void setOtp(String otp) {
-		this.otp = otp;
 	}
 
 	public Boolean getIsDelivered() {
@@ -123,11 +124,9 @@ public class Invoice {
 
 	@Override
 	public String toString() {
-		return "Invoice [id=" + id + ", repairService=" + repairService + ", totalAmount=" + totalAmount + ", otp="
-				+ otp + ", isDelivered=" + isDelivered + ", deliveredAt=" + deliveredAt + ", deliveredBy=" + deliveredBy
+		return "Invoice [id=" + id + ", repairService=" + repairService + ", totalAmount=" + totalAmount
+				+ ", isDelivered=" + isDelivered + ", deliveredAt=" + deliveredAt + ", deliveredBy=" + deliveredBy
 				+ ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
 	}
-	
-	
 
 }

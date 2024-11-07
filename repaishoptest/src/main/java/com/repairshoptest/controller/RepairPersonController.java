@@ -27,9 +27,11 @@ import com.repairshoptest.enums.UserRole;
 import com.repairshoptest.exception.InvalidCredentialsException;
 import com.repairshoptest.exception.ResourceNotFoundException;
 import com.repairshoptest.model.AdditionalItemRFA;
+import com.repairshoptest.model.NewItem;
 import com.repairshoptest.model.RepairPerson;
 import com.repairshoptest.model.RepairService;
 import com.repairshoptest.model.ServiceStatus;
+import com.repairshoptest.service.NewItemService;
 import com.repairshoptest.service.RFAService;
 import com.repairshoptest.service.RepairPersonService;
 import com.repairshoptest.service.RepairServiceService;
@@ -50,6 +52,9 @@ public class RepairPersonController {
 
 	@Autowired
 	private ServiceStatusService serviceStatusService;
+	
+	@Autowired
+	private NewItemService newItemService;
 
 	@GetMapping("/profile")
 	public ResponseEntity<?> getProfile() {
@@ -99,6 +104,13 @@ public class RepairPersonController {
 		return ResponseEntity.ok(rfaPage.map(AdditionalItemRFAResponseDTO::fromEntity));
 	}
 
+	@GetMapping("/newitems")
+	public ResponseEntity<?> getNewItems() {
+		List<NewItem> items = newItemService.findAll();
+		return ResponseEntity.ok(items);
+
+	}
+	
 	@GetMapping("/request/{id}")
 	public ResponseEntity<?> getRequestById(@PathVariable("id") int id) {
 

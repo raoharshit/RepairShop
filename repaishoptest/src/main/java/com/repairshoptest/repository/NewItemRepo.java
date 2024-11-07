@@ -12,4 +12,6 @@ public interface NewItemRepo extends JpaRepository<NewItem, Integer>{
 	
 	List<NewItem> findByCategory(String category);
 	
+	List<NewItem> findAll();
+	
 }

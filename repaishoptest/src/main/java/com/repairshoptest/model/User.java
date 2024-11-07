@@ -16,6 +16,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.repairshoptest.enums.UserRole;
 
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -66,11 +67,11 @@ public abstract class User {
 	
 	public String getType() {
 	    if (this instanceof Customer) {
-	        return "CUSTOMER";
+	        return UserRole.CUSTOMER.getRole();
 	    } else if (this instanceof Clerk) {
-	        return "CLERK";
+	        return UserRole.CLERK.getRole();
 	    }
-	    return "REPAIR";
+	    return UserRole.REPAIR_PERSON.getRole();
 	}
 
 	public String getName() {

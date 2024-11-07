@@ -34,4 +34,9 @@ public class NewItemServiceImpl implements NewItemService{
 		return optItem.get();
 	}
 
+	@Override
+	public List<NewItem> findAll() {
+		return newItemRepo.findAll();
+	}
+
 }

@@ -196,7 +196,7 @@ public class ClerkController {
 
 	}
 	
-	@PostMapping("/service/{id}")
+	@GetMapping("/service/{id}/generate-invoice")
 	public ResponseEntity<?> generateOTPForInvoice(@PathVariable("id") int id) {
 		int clerkId = Integer.parseInt((String) SecurityContextHolder.getContext().getAuthentication().getPrincipal());
 		InvoiceGenerateResponse invoiceGenerateResponse = invoiceService.generateOTP(clerkId,id);

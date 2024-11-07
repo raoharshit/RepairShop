@@ -60,12 +60,11 @@ public class RepairServiceServiceImpl implements RepairServiceService {
 	@Override
 	public Page<RepairService> getServicesForRole(UserRole role, int userId, Boolean onlyMine, String search, int page,
 			int limit) {
-		if(limit == -1) {
+		if (limit == -1) {
 			page = 0;
 			limit = Integer.MAX_VALUE;
 		}
 		Pageable pageable = PageRequest.of(page, limit);
-
 		switch (role) {
 		case CLERK:
 			return repairServiceRepo.findServicesForClerk(search, onlyMine, userId, pageable);
