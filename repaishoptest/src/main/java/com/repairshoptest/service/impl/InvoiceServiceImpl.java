@@ -96,6 +96,7 @@ public class InvoiceServiceImpl implements InvoiceService{
 		Invoice invoice = new Invoice();
 		invoice.setRepairService(service);
 		invoice.setTotalAmount(totalAmount);
+		invoice.setOtp("0");
 		
 		Invoice save = invoiceRepo.save(invoice);
 		
